@@ -1,23 +1,53 @@
-# HNSW-CLJ: Ultra-Fast Vector Search in Clojure 🚀
+# HNSW-CLJ: Vector Search in Clojure 
 
-**Status: Work In Progress (WIP)**
+### **Status: Pre-alpha (early WIP)**
 
-Production-ready HNSW implementation achieving sub-millisecond search on 31K+ vectors with SIMD acceleration.
+
+Fast HNSW search in Clojure with no third-party dependencies, delivering sub-millisecond results via SIMD- and BLAS-optimized distance core. Achieves 4–16× speedup. The strength of this solution is that it targets the main runtime bottleneck, leverages data-level parallelism, minimizes overhead, and aligns computation with the hardware’s strengths—significantly reducing query latency and increasing throughput.
+
+Backround: About 3–4 years ago I began exploring how to implement HNSW in Clojure without third-party dependencies and with full customizability—because AI keeps changing, and so do the needs. 
+
+<br> 
+
+> **Why accelerating distance computation matters**
+> - In HNSW, 70–95% of query time is spent computing distances/inner products.
+> - SIMD + Java Vector API: 4–16× fewer instructions, fewer cache misses, lower latency.
+> - JBLAS (BLAS kernels): Near-peak CPU throughput with SIMD + multithreading for large batches.
+> - Result: Higher QPS, lower P95/P99 latency.
+
+<br> 
 
 ## ⚡ Performance Results
 
-**31,173 Károli Bible verses (768-dim embeddings, 492.9 MB index):**
+*I use the Old Hungarian Károli Bible for semantic similarity research, where pairing Hebrew and Greek meanings is a challenging task (it was). In this environment, it becomes immediately clear if something is not working. I tested on 31,173 verses — the full Károli Bible (mpnet-v2, 768-dim embeddings, 492.9 MB index):*
 
 ### Multi-threaded Performance (Production)
 - **20 threads:** 0.212 ms/query (**4,719 QPS**)
-- **50 threads:** 0.222 ms/query (**4,501 QPS**)
 
 ### Single-threaded Performance (Baseline)
 - **Single query:** 1.199 ms/query (834 QPS)
 - **Speedup:** 5.7x with 20 threads parallelization
 - **vs Linear search:** 79x faster (single), 468x faster (parallel)
 
+<br> 
+
+### ⚡ SIMD + Java Vector API + JBLAS
+
+| Approach                      | Best for                        | Key benefits                                                                 |
+|--------------------------------|---------------------------------|------------------------------------------------------------------------------|
+| 🧮 **Java Vector API (SIMD)** | Per-query, low-latency search    | 4–16× fewer instructions, branchless tight loops, cache-friendly arrays, no JNI overhead |
+| 📦 **JBLAS (native BLAS)**    | Large batches, high throughput   | Optimized BLAS kernels (OpenBLAS/MKL), GEMM batching, multithreaded + SIMD   |
+
+**Impact:**  
+- 4–16× faster distance kernel (CPU/ISA dependent)  
+- Lower P95/P99 latency, higher QPS
+<br>
+<br> 
+
+
 ## 🎯 Interactive Demo
+
+⚠️ ⚠️  Planned: standalone dependency after full functionality and examples. End of August. ⚠️ ⚠️ 
 
 ```bash
 # Quick start
@@ -27,7 +57,11 @@ bash final-test-bench/hnsw-clj-our-solution/run_interactive_31k.sh
 clojure -M final-test-bench/hnsw-clj-our-solution/interactive_search_31k.clj
 ```
 
+<br> 
+
 ### Example Search Session
+
+Automatically pick one verse → compare it with all other verses → return the top 5 most similar items.
 
 ```
 🔍 Search> love 5
@@ -97,6 +131,9 @@ clojure -M final-test-bench/hnsw-clj-our-solution/interactive_search_31k.clj
 - [ ] Distributed index support
 - [ ] GPU acceleration
 - [ ] Memory-mapped indices
+
+
+
 
 ## 🛠️ Architecture
 
@@ -213,7 +250,7 @@ index.save_index('index.bin')
 
 This combines Python's fast build time with Clojure's excellent serving performance!
 
-*For detailed comparison, see [PARAMETER_COMPARISON.md](PARAMETER_COMPARISON.md) and [FINAL_VALIDATED_RESULTS.md](FINAL_VALIDATED_RESULTS.md)*
+*For detailed comparison, see [PARAMETER_COBENCHMARK_RESULTS_ACTUAL.md](BENCHMARK_RESULTS_ACTUAL.md) and [BENCHMARK_RESULTS_PYTHON.md](BENCHMARK_RESULTS_PYTHON.md)*
 
 ## 🔧 Requirements
 
@@ -223,8 +260,4 @@ This combines Python's fast build time with Clojure's excellent serving performa
 
 ## 📝 License
 
-EPL-2.0
-
----
-
-*For detailed performance analysis, see [PERFORMANCE_ANALYSIS-EN.md](final-test-bench/hnsw-clj-our-solution/PERFORMANCE_ANALYSIS-EN.md)*
+MIT
