@@ -1,38 +1,34 @@
-{:paths ["src"]
+{:paths ["src" "dev" "scripts"]
 
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
         org.clojure/data.json {:mvn/version "2.4.0"}
-
         ;; Native BLAS for real SIMD performance
         org.jblas/jblas {:mvn/version "1.2.5"}
+        org.clojure/core.async {:mvn/version "1.8.741"}
+        ;; math calculations
+        org.apache.commons/commons-math3 {:mvn/version "3.6.1"}
+        net.mikera/core.matrix {:mvn/version "0.63.0"}}
 
-        ;; Alternative: ND4J for deep learning optimized operations
-        ; org.nd4j/nd4j-native-platform {:mvn/version "1.0.0-M2.1"}
-        }
+ :repl-options {:timeout 600000}
 
  :aliases
+
  {:run {:main-opts ["-m" "hnsw.core"]}
 
   :test {:extra-paths ["test"]
-         :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}}
+         :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}
+                      lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
+                      lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
+                      lambdaisland/kaocha-cljs {:mvn/version "1.5.154"}
+                      ;; For test data generation
+                      org.clojure/test.check {:mvn/version "1.1.1"}
+                      org.clojure/spec.alpha {:mvn/version "0.3.218"}}
          :main-opts ["-m" "kaocha.runner"]}
 
   :repl {:extra-deps {cider/cider-nrepl {:mvn/version "0.45.0"}}
          :main-opts ["-m" "nrepl.cmdline"
                      "--middleware" "[cider.nrepl/cider-middleware]"
                      "--interactive"]}
-
-  ;; SIMD with Java Vector API (experimental)
-  :simd {:jvm-opts ["--add-modules=jdk.incubator.vector"
-                    "-XX:+UnlockExperimentalVMOptions"
-                    "-XX:+UseVectorAPI"
-                    "-XX:+EnableVectorSupport"
-                    "-XX:+EnableVectorAggressiveReboxing"]}
-
-  ;; Native BLAS optimized version
-  :native {:jvm-opts ["-Djava.library.path=/usr/local/lib"
-                      "-XX:+UseParallelGC"
-                      "-XX:MaxInlineLevel=15"]}
 
   :nrepl
   {:extra-deps
@@ -57,40 +53,9 @@
     "--port" "7888"
     "--middleware" "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor]"]}
 
-  ;; Index building
-  :build-index {:main-opts ["-m" "clojure.main" "scripts/build_index.clj"]}
-  :build-complete {:main-opts ["-m" "clojure.main" "scripts/build_index_complete.clj"]}
-
-  ;; Performance test scripts
-  :perf-quick {:main-opts ["-m" "clojure.main" "scripts/test_quick.clj"]}
-  :perf {:main-opts ["-m" "clojure.main" "scripts/test_performance.clj"]}
-  :perf-10k {:main-opts ["-m" "clojure.main" "scripts/test_10k_performance.clj"]}
-  :perf-30k {:main-opts ["-m" "clojure.main" "scripts/test_30k_performance.clj"]}
-  :perf-30k-fast {:main-opts ["-m" "clojure.main" "scripts/test_30k_performance_fast.clj"]}
-
   ;; Complete Bible tests and search
   :test-complete {:main-opts ["-m" "clojure.main" "scripts/test_complete_bible.clj"]}
-  :search {:main-opts ["-m" "clojure.main" "scripts/search_bible.clj"]}
 
-  ;; Interactive search - load once, search many times
-  :interactive {:main-opts ["-m" "clojure.main" "scripts/interactive_search.clj"]}
-
-  ;; Benchmark against other libraries
-  :benchmark {:extra-paths ["src"]
-              :extra-deps {com.github.jelmerk/hnswlib-core {:mvn/version "1.1.2"}
-                           org.apache.lucene/lucene-core {:mvn/version "9.9.1"}
-                           org.apache.lucene/lucene-sandbox {:mvn/version "9.9.1"}}
-              :jvm-opts ["-Xmx2g"
-                         "-XX:+UseG1GC"
-                         "--add-modules=jdk.incubator.vector"]
-              :main-opts ["-m" "benchmark.core"]}
-
-  ;; Benchmark with larger dataset
-  :benchmark-large {:extra-paths ["src"]
-                    :extra-deps {com.github.jelmerk/hnswlib-core {:mvn/version "1.1.2"}
-                                 org.apache.lucene/lucene-core {:mvn/version "9.9.1"}
-                                 org.apache.lucene/lucene-sandbox {:mvn/version "9.9.1"}}
-                    :jvm-opts ["-Xmx4g"
-                               "-XX:+UseG1GC"
-                               "--add-modules=jdk.incubator.vector"]
-                    :main-opts ["-m" "benchmark.core" "50000" "768" "1000" "10"]}}}
+  ;; Build tools for creating JARs
+  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}}
+          :ns-default build}}}

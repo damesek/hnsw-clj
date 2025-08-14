@@ -1,0 +1,55 @@
+#kaocha/v1
+ {:tests [{:id :unit
+           :test-paths ["test"]
+           :ns-patterns ["hnsw\\..*-test$" "data-generator-test$"]
+           :skip-meta [:integration :performance :slow]}
+
+          {:id :integration
+           :test-paths ["test"]
+           :ns-patterns [".*integration-test$"]
+           :skip-meta [:performance]}
+
+          {:id :performance
+           :test-paths ["test"]
+           :focus-meta [:performance]
+           :skip-meta [:slow]}
+
+          {:id :benchmark
+           :test-paths ["test"]
+           :ns-patterns [".*benchmark-test$"]
+           :skip-meta []}
+
+          {:id :quick
+           :test-paths ["test"]
+           :ns-patterns ["hnsw\\.core-test$" "simple-test$"]
+           :focus-meta [:quick]
+           :skip-meta [:integration :performance :slow]}
+
+          {:id :all
+           :test-paths ["test"]
+           :ns-patterns [".*-test$"]}]
+
+  :plugins [:kaocha.plugin/profiling
+            :kaocha.plugin/print-invocations]
+
+  :reporter [kaocha.report/documentation]
+
+ ;; Configuration options
+  :fail-fast? false
+  :color? true
+  :randomize? false
+
+ ;; Watch mode configuration
+  :watch? false
+  :watch-paths ["src" "test"]
+
+ ;; Parallelization (be careful with concurrent tests)
+  :parallelize? false
+
+ ;; Print captured output
+  :capture-output? false
+
+ ;; Bindings that apply during testing
+  :bindings {*warn-on-reflection* false
+             *print-length* 100
+             *print-level* 10}}

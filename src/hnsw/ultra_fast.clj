@@ -1,10 +1,9 @@
 (ns hnsw.ultra-fast
   "Ultra-fast HNSW implementation with maximum performance optimizations"
-  (:import [java.util PriorityQueue HashMap HashSet ArrayList Collections Random]
-           [java.util.concurrent ConcurrentHashMap ThreadLocalRandom ForkJoinPool]
+  (:import [java.util PriorityQueue HashSet ArrayList Collections Random]
+           [java.util.concurrent ConcurrentHashMap]
            [java.util.concurrent.atomic AtomicInteger AtomicReference]
-           [java.util.function BiFunction Consumer]
-           [java.lang.invoke MethodHandles VarHandle]))
+           [java.util.function Consumer]))
 
 ;; ===== Performance Configuration =====
 (set! *warn-on-reflection* false)
@@ -151,7 +150,7 @@
 
 (defn search-layer-ultra
   "Ultra-optimized layer search with minimal allocations"
-  [^UltraGraph graph ^doubles query-vec entry-points num-closest level]
+  [graph ^doubles query-vec entry-points num-closest level]
   (let [^ConcurrentHashMap nodes (.nodes graph)
         distance-fn (.distance-fn graph)
         ^HashSet visited (HashSet. (* 2 num-closest))
@@ -161,7 +160,7 @@
 
     ;; Initialize with entry points
     (doseq [^String point entry-points]
-      (when-let [^UltraNode node (.get nodes point)]
+      (when-let [node (.get nodes point)]
         (let [dist (distance-fn query-vec (.vector node))]
           (.add visited point)
           (.add candidates (Candidate. point dist))
@@ -178,7 +177,7 @@
                                      Double/MAX_VALUE
                                      (.distance ^Candidate (.peek nearest)))))
 
-          (when-let [^UltraNode node (.get nodes (.id current))]
+          (when-let [node (.get nodes (.id current))]
             (when (<= level (.level node)) ;; Check level bounds
               (let [^HashSet level-neighbors (aget ^objects (.neighbors node) level)]
                 (when (and level-neighbors (not (.isEmpty level-neighbors)))
@@ -189,7 +188,7 @@
                                 (let [^String neighbor neighbor]
                                   (when-not (.contains visited neighbor)
                                     (.add visited neighbor)
-                                    (when-let [^UltraNode neighbor-node (.get nodes neighbor)]
+                                    (when-let [neighbor-node (.get nodes neighbor)]
                                       (let [dist (distance-fn query-vec (.vector neighbor-node))]
 
                                       ;; Only add if improving result
@@ -216,7 +215,7 @@
 
 (defn insert-single
   "Optimized single element insertion"
-  [^UltraGraph graph ^String id ^doubles vector]
+  [graph ^String id ^doubles vector]
   (let [^ConcurrentHashMap nodes (.nodes graph)
         level (assign-level-ultra (.ml graph))
         neighbors (make-array Object (inc level))]
@@ -238,7 +237,7 @@
       ;; Connect to existing graph
       (when (> (.size nodes) 1)
         (let [entry-point (.get (.entry-point graph))
-              ^UltraNode entry-node (.get nodes entry-point)]
+              entry-node (.get nodes entry-point)]
           (when entry-node
             (let [entry-level (.level entry-node)
                   M (.M graph)
@@ -254,20 +253,22 @@
 
                     ;; Connect bidirectionally
                     (doseq [^String neighbor (take m candidates)]
-                      (when-let [^UltraNode neighbor-node (.get nodes neighbor)]
-                        ;; Add edges
-                        (.add ^HashSet (aget neighbors lc) neighbor)
-                        (.add ^HashSet (aget ^objects (.neighbors neighbor-node) lc) id)
+                      (when-let [neighbor-node (.get nodes neighbor)]
+                        ;; Check if neighbor has this level
+                        (when (<= lc (.level neighbor-node))
+                          ;; Add edges
+                          (.add ^HashSet (aget neighbors lc) neighbor)
+                          (.add ^HashSet (aget ^objects (.neighbors neighbor-node) lc) id)
 
-                        ;; Prune if needed
-                        (let [^HashSet neighbor-conns (aget ^objects (.neighbors neighbor-node) lc)]
-                          (when (> (.size neighbor-conns) m)
-                            (prune-connections-ultra graph neighbor lc m)))))
+                          ;; Prune if needed
+                          (let [^HashSet neighbor-conns (aget ^objects (.neighbors neighbor-node) lc)]
+                            (when (> (.size neighbor-conns) m)
+                              (prune-connections-ultra graph neighbor lc m))))))
 
                     (recur (dec lc) candidates)))))))
 
         ;; Update entry point if necessary
-        (let [^UltraNode entry-node (.get nodes (.get (.entry-point graph)))]
+        (let [entry-node (.get nodes (.get (.entry-point graph)))]
           (when (and entry-node (> level (.level entry-node)))
             (.set (.entry-point graph) id)))))
 
@@ -277,9 +278,9 @@
 
 (defn prune-connections-ultra
   "Prune connections using heuristic"
-  [^UltraGraph graph ^String node-id level max-conns]
+  [graph ^String node-id level max-conns]
   (let [^ConcurrentHashMap nodes (.nodes graph)
-        ^UltraNode node (.get nodes node-id)
+        node (.get nodes node-id)
         ^HashSet connections (aget ^objects (.neighbors node) level)]
 
     (when (> (.size connections) max-conns)
@@ -289,7 +290,7 @@
             sorted-neighbors (sort-by
                               (fn [^String nid]
                                 (distance-fn node-vec
-                                             (.vector ^UltraNode (.get nodes nid))))
+                                             (.vector (.get nodes nid))))
                               (vec connections))]
 
         ;; Keep only closest neighbors
@@ -300,13 +301,16 @@
 ;; ===== Batch Insertion =====
 
 (defn insert-batch
-  "Sequential batch insertion"
-  [^UltraGraph graph elements & {:keys [show-progress?]
-                                 :or {show-progress? true}}]
+  "Sequential batch insertion - parallel version had issues"
+  [graph elements & {:keys [show-progress? num-threads batch-size]
+                     :or {show-progress? true
+                          num-threads (.availableProcessors (Runtime/getRuntime))
+                          batch-size 1000}}]
   (let [total (count elements)]
     (when show-progress?
       (println (format "Inserting %d elements..." total)))
 
+    ;; Sequential insertion for now - parallel had issues
     (loop [idx 0
            remaining elements
            g graph]
@@ -316,7 +320,7 @@
                           vector
                           (double-array vector))]
 
-          (when (and show-progress? (zero? (mod idx 100)))
+          (when (and show-progress? (zero? (mod idx 500)))
             (println (format "Progress: %d/%d (%.1f%%)"
                              idx total (* 100.0 (/ idx total)))))
 
@@ -341,12 +345,12 @@
 
 (defn search-knn
   "Search k nearest neighbors"
-  [^UltraGraph graph ^doubles query-vec ^long k]
+  [graph ^doubles query-vec ^long k]
   (if (or (nil? (.get (.entry-point graph)))
           (zero? (.size (.nodes graph))))
     []
     (let [entry-point (.get (.entry-point graph))
-          ^UltraNode entry-node (.get (.nodes graph) entry-point)
+          entry-node (.get (.nodes graph) entry-point)
           entry-level (.level entry-node)
           ef (max k 50)]
 
@@ -362,7 +366,7 @@
                            (map (fn [^String id]
                                   {:id id
                                    :distance (distance-fn query-vec
-                                                          (.vector ^UltraNode (.get nodes id)))})
+                                                          (.vector (.get nodes id)))})
                                 nearest))))
 
           (recur (dec level)
@@ -373,7 +377,7 @@
 
 (defn graph-info
   "Get graph statistics"
-  [^UltraGraph graph]
+  [graph]
   {:num-elements (.get (.element-count graph))
    :entry-point (.get (.entry-point graph))
    :M (.M graph)

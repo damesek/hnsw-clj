@@ -1,13 +1,10 @@
-(ns hnsw.ultra-optimized
+(ns hnsw.wip.ultra-optimized
   "Ultra-optimized HNSW with all performance improvements including SIMD"
   (:require [hnsw.ultra-fast :as base]
-            [hnsw.simd-optimized :as simd-opt]
-            [clojure.string :as str])
-  (:import [java.util PriorityQueue HashMap HashSet ArrayList Collections Random Arrays]
-           [java.util.concurrent ConcurrentHashMap ThreadLocalRandom ForkJoinPool
-            Callable Future ConcurrentSkipListSet CountDownLatch Executors]
-           [java.util.concurrent.atomic AtomicInteger AtomicReference AtomicLong]
-           [java.util.function BiFunction Consumer]
+            [hnsw.simd-optimized :as simd-opt])
+  (:import [java.util Arrays]
+           [java.util.concurrent ConcurrentHashMap ForkJoinPool ConcurrentSkipListSet]
+           [java.util.concurrent.atomic AtomicInteger AtomicReference]
            [java.nio ByteBuffer]
            [java.nio.channels FileChannel FileChannel$MapMode]
            [java.io RandomAccessFile]))

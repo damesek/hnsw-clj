@@ -12,6 +12,7 @@ pom.xml.asc
 /.prepl-port
 .hgignore
 .hg/
+.github/
 
 # deps.edn
 .cpcache/
@@ -34,6 +35,18 @@ Thumbs.db
 
 # Test output
 /test-output
+/target/
+target/
+
+# Kaocha specific
+.kaocha/
+target/coverage/
+target/junit.xml
+target/test-results/
+
+# Test data (keep the test data directory but not generated files)
+test/data/*.json
+!test/data/README.md
 
 # Data files
 /data/
