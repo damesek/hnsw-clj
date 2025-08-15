@@ -96,7 +96,7 @@ def save_embeddings(verses, embeddings, output_path):
 
 def main():
     # Configuration
-    bible_path = "data/KaroliRevid_m.tsv"
+    bible_path = "data/KJV_m.tsv"  # Using King James Version
     
     # Parse arguments
     if len(sys.argv) > 1:
@@ -107,7 +107,7 @@ def main():
         output_path = "data/bible_embeddings_20k.json"
     
     print("=" * 60)
-    print("🔯 Bible Embedding Generator - Large Scale")
+    print("📖 Bible Embedding Generator - Large Scale (KJV)")
     print("=" * 60)
     
     # Count total verses

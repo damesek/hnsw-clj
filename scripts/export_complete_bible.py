@@ -28,33 +28,33 @@ def load_bible_verses(filepath, limit=None):
                 break
             parts = line.strip().split('\t')
             if len(parts) == 4:
-                # Create short book names
+                # Create short book names for English Bible books
                 book_map = {
-                    '1 Mózes': 'Ter', '2 Mózes': 'Exod', '3 Mózes': 'Lev',
-                    '4 Mózes': 'Num', '5 Mózes': 'Deut',
-                    'Józsué': 'Józs', 'Bírák': 'Bír', 'Ruth': 'Ruth',
-                    '1 Sámuel': '1Sám', '2 Sámuel': '2Sám',
-                    '1 Királyok': '1Kir', '2 Királyok': '2Kir',
-                    '1 Krónika': '1Krón', '2 Krónika': '2Krón',
-                    'Ezsdrás': 'Ezsd', 'Nehémiás': 'Neh', 'Eszter': 'Eszt',
-                    'Jób': 'Jób', 'Zsoltárok': 'Zsolt', 'Példabeszédek': 'Péld',
-                    'Prédikátor': 'Préd', 'Énekek éneke': 'Ének',
-                    'Ézsaiás': 'Ézs', 'Jeremiás': 'Jer', 'Siralmak': 'Siral',
-                    'Ezékiel': 'Ezék', 'Dániel': 'Dán',
-                    'Hóseás': 'Hós', 'Jóel': 'Jóel', 'Ámós': 'Ámós',
-                    'Abdiás': 'Abd', 'Jónás': 'Jón', 'Mikeás': 'Mik',
-                    'Náhum': 'Náh', 'Habakuk': 'Hab', 'Zofóniás': 'Zof',
-                    'Haggeus': 'Hag', 'Zakariás': 'Zak', 'Malakiás': 'Mal',
-                    'Máté': 'Mát', 'Márk': 'Márk', 'Lukács': 'Luk', 'János': 'Ján',
-                    'Apostolok': 'ApCsel', 'Róma': 'Róm',
-                    '1 Korintus': '1Kor', '2 Korintus': '2Kor',
-                    'Galata': 'Gal', 'Efézus': 'Ef', 'Filippi': 'Fil', 'Kolosse': 'Kol',
-                    '1 Thessalonika': '1Tessz', '2 Thessalonika': '2Tessz',
-                    '1 Timóteus': '1Tim', '2 Timóteus': '2Tim',
-                    'Titus': 'Tit', 'Filemon': 'Filem', 'Zsidók': 'Zsid',
-                    'Jakab': 'Jak', '1 Péter': '1Pét', '2 Péter': '2Pét',
-                    '1 János': '1Ján', '2 János': '2Ján', '3 János': '3Ján',
-                    'Júdás': 'Júd', 'Jelenések': 'Jel'
+                    'Genesis': 'Gen', 'Exodus': 'Exod', 'Leviticus': 'Lev',
+                    'Numbers': 'Num', 'Deuteronomy': 'Deut',
+                    'Joshua': 'Josh', 'Judges': 'Judg', 'Ruth': 'Ruth',
+                    '1 Samuel': '1Sam', '2 Samuel': '2Sam',
+                    '1 Kings': '1Kgs', '2 Kings': '2Kgs',
+                    '1 Chronicles': '1Chr', '2 Chronicles': '2Chr',
+                    'Ezra': 'Ezra', 'Nehemiah': 'Neh', 'Esther': 'Esth',
+                    'Job': 'Job', 'Psalms': 'Ps', 'Proverbs': 'Prov',
+                    'Ecclesiastes': 'Eccl', 'Song of Solomon': 'Song',
+                    'Isaiah': 'Isa', 'Jeremiah': 'Jer', 'Lamentations': 'Lam',
+                    'Ezekiel': 'Ezek', 'Daniel': 'Dan',
+                    'Hosea': 'Hos', 'Joel': 'Joel', 'Amos': 'Amos',
+                    'Obadiah': 'Obad', 'Jonah': 'Jonah', 'Micah': 'Mic',
+                    'Nahum': 'Nah', 'Habakkuk': 'Hab', 'Zephaniah': 'Zeph',
+                    'Haggai': 'Hag', 'Zechariah': 'Zech', 'Malachi': 'Mal',
+                    'Matthew': 'Matt', 'Mark': 'Mark', 'Luke': 'Luke', 'John': 'John',
+                    'Acts': 'Acts', 'Romans': 'Rom',
+                    '1 Corinthians': '1Cor', '2 Corinthians': '2Cor',
+                    'Galatians': 'Gal', 'Ephesians': 'Eph', 'Philippians': 'Phil', 'Colossians': 'Col',
+                    '1 Thessalonians': '1Thess', '2 Thessalonians': '2Thess',
+                    '1 Timothy': '1Tim', '2 Timothy': '2Tim',
+                    'Titus': 'Titus', 'Philemon': 'Phlm', 'Hebrews': 'Heb',
+                    'James': 'Jas', '1 Peter': '1Pet', '2 Peter': '2Pet',
+                    '1 John': '1John', '2 John': '2John', '3 John': '3John',
+                    'Jude': 'Jude', 'Revelation': 'Rev'
                 }
                 
                 book_full = parts[0]
@@ -129,10 +129,10 @@ def save_embeddings(verses, embeddings, output_path):
 
 def main():
     # Configuration
-    bible_path = "data/KaroliRevid_m.tsv"
+    bible_path = "data/KJV_m.tsv"  # Using King James Version
     
     print("=" * 60)
-    print("🔯 Complete Bible Embedding Generator")
+    print("📖 Complete Bible Embedding Generator (King James Version)")
     print("=" * 60)
     
     # Count total verses

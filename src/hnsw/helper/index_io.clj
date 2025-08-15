@@ -1,4 +1,4 @@
-(ns hnsw.index-io
+(ns hnsw.helper.index-io
   "HNSW Index Serialization/Deserialization utilities using EDN format"
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]

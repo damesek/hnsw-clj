@@ -1,7 +1,7 @@
 # HNSW-CLJ: Vector Search in Clojure 
 
 ### **Status: Pre-alpha (early WIP)**
-
+v0.1.1
 
 Fast HNSW search in Clojure with no third-party dependencies, delivering sub-millisecond results via SIMD- and BLAS-optimized distance core. Achieves 4–16× speedup. The strength of this solution is that it targets the main runtime bottleneck, leverages data-level parallelism, minimizes overhead, and aligns computation with the hardware’s strengths—significantly reducing query latency and increasing throughput.
 
@@ -21,13 +21,27 @@ Backround: About 3–4 years ago I began exploring how to implement HNSW in Cloj
 
 *I use the Old Hungarian Károli Bible for semantic similarity research, where pairing Hebrew and Greek meanings is a challenging task (it was). In this environment, it becomes immediately clear if something is not working. I tested on 31,173 verses — the full Károli Bible (mpnet-v2, 768-dim embeddings, 492.9 MB index):*
 
-### Multi-threaded Performance (Production)
-- **20 threads:** 0.212 ms/query (**4,719 QPS**)
+### 🏆 Latest Benchmark Results (August 15, 2025)
 
-### Single-threaded Performance (Baseline)
-- **Single query:** 1.199 ms/query (834 QPS)
-- **Speedup:** 5.7x with 20 threads parallelization
-- **vs Linear search:** 79x faster (single), 468x faster (parallel)
+#### Multi-threaded Performance (Production)
+- **Peak Performance:** **0.186 ms/query** (**5,376 QPS**) with 20 threads
+- **Average (5 runs):** **0.195 ms/query** (**5,128 QPS**)
+- **Consistency:** <5% variance across runs
+
+#### Detailed Performance Metrics
+
+| Configuration | QPS | Latency (ms) | vs Target | Status |
+|--------------|-----|--------------|-----------|--------|
+| **Best Run** | **5,376** | **0.186** | +14% | ✅ Exceeded |
+| Run 2 | 5,236 | 0.191 | +10% | ✅ Exceeded |
+| Run 3 | 4,773 | 0.209 | +1% | ✅ Met |
+| **Average** | **5,128** | **0.195** | **+9%** | ✅ **Exceeded** |
+| Original Target | 4,719 | 0.212 | - | Baseline |
+
+#### Single-threaded Performance (Baseline)
+- **Single query:** 1.093 ms/query (915 QPS)
+- **Speedup:** 5.8x with 20 threads parallelization
+- **vs Linear search:** 86x faster (single), 500x faster (parallel)
 
 <br> 
 
@@ -44,19 +58,52 @@ Backround: About 3–4 years ago I began exploring how to implement HNSW in Cloj
 <br>
 <br> 
 
+⚠️ ⚠️  Planned: standalone dep after full functionality and examples. End of August. ⚠️ ⚠️ 
 
-## 🎯 Interactive Demo
+## 🗂️ Available ANN Algorithms in this branch 
 
-⚠️ ⚠️  Planned: standalone dependency after full functionality and examples. End of August. ⚠️ ⚠️ 
+### 1. **📐 Graph-based Algorithms** (Graph-based ANN)
+Build navigable graph structures, search by hopping from node to node.
 
-```bash
-# Quick start
-bash final-test-bench/hnsw-clj-our-solution/run_interactive_31k.sh
+| Implementation | Namespace | Description | Build                      | Search | Recall |
+|---------------|-----------|-------------|----------------------------|--------|--------|
+| **Pure HNSW** | `hnsw.hnsw-search` | Original HNSW algorithm | extreme Slow (300s+) ** ⚠️ | 0.2 ms | 99%+ |
+| **Ultra Fast HNSW** | `hnsw.ultra-fast` | Optimized HNSW | Medium                     | 0.3ms  | 98%+ |
+| **Ultra Optimized** | `hnsw.ultra-optimized` | Max optimized | Medium                     | 0.2ms  | 98%+ |
 
-# Or with Clojure
-clojure -M final-test-bench/hnsw-clj-our-solution/interactive_search_31k.clj
-```
+** I work on this [WIP]
 
+### 2. **🗃️ Partition-based Algorithms** (Partition-based ANN)
+Divide data into partitions, search in parallel.
+
+| Implementation | Namespace | Description | Build | Search | Recall |
+|---------------|-----------|-------------|-------|--------|--------|
+| **Partitioned HNSW** | `hnsw.partitioned-hnsw` | Multiple HNSW in parallel | 6-7s | 0.4-0.6ms | 91%    |
+| **Lightning** | `hnsw.lightning` | Simple partitions | 61ms | 1.5ms | 29% ** |
+| **IVF-FLAT** | `hnsw.ivf-flat` | K-means + flat search | 2-5s | 5-10ms | 95%+   |
+
+** lightening parallel ~ like knn++ > 5-7 sec index, 7 - 1x ms very good recall.
+
+### 3. **🔀 Hash-based Algorithms** (Hash-based ANN)
+Group similar vectors using hash functions.
+
+| Implementation | Namespace | Description | Build | Search | Recall |
+|---------------|-----------|-------------|-------|--------|--------|
+| **Hybrid LSH** | `hnsw.hybrid-lsh` | Multi-probe LSH | 0.5-1s | 2-5ms | 45% |
+
+### 4. **🔄 Hybrid Algorithms** (Hybrid ANN)
+Combine multiple techniques.
+
+| Implementation | Namespace | Description | Build | Search | Recall |
+|---------------|-----------|-------------|-------|--------|--------|
+| **IVF-HNSW** | `hnsw.ivf-hnsw` | IVF + HNSW graph | 30-90s | 2-5ms | 85-90% |
+
+### 5. **📉 Dimension Reduction Algorithms** (Dimension Reduction ANN)
+First reduce dimensions, then search in reduced space. (my favorite)
+
+| Implementation | Namespace | Description | Build | Search | Recall |
+|---------------|-----------|-------------|-------|--------|--------|
+| **P-HNSW (PCAF)** | `hnsw.pcaf` | Random Projection + HNSW | ~5s | 1-2ms | 85-90% |
 <br> 
 
 ### Example Search Session

@@ -1,8 +1,7 @@
 (ns hnsw.simd
   "SIMD-optimized distance functions using Java Vector API (Java 16+)
    Provides significant speedup for vector operations on modern CPUs"
-  (:import [jdk.incubator.vector FloatVector VectorSpecies VectorOperators VectorMask]
-           [java.nio ByteOrder]))
+  (:import [jdk.incubator.vector FloatVector VectorSpecies VectorOperators]))
 
 ;; ===== Vector Species Configuration =====
 (def ^VectorSpecies SPECIES FloatVector/SPECIES_PREFERRED)

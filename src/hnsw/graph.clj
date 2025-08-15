@@ -1,13 +1,25 @@
 (ns hnsw.graph
-  "HNSW (Hierarchical Navigable Small World) graph implementation"
-  (:require [clojure.set :as set]))
+  "HNSW (Hierarchical Navigable Small World) graph implementation")
 
 ;; Distance functions - Using Java Math instead of numeric-tower
 (defn euclidean-distance
-  "Calculate Euclidean distance between two vectors"
+  "Calculate Euclidean distance between two vectors - optimized for double arrays"
   [v1 v2]
-  (Math/sqrt
-   (reduce + (map (fn [a b] (Math/pow (- a b) 2)) v1 v2))))
+  (if (and (instance? (Class/forName "[D") v1)
+           (instance? (Class/forName "[D") v2))
+    ;; Optimized path for double arrays
+    (let [^doubles a1 v1
+          ^doubles a2 v2
+          len (alength a1)]
+      (loop [i 0
+             sum 0.0]
+        (if (< i len)
+          (let [diff (- (aget a1 i) (aget a2 i))]
+            (recur (inc i) (+ sum (* diff diff))))
+          (Math/sqrt sum))))
+    ;; Fallback for regular vectors
+    (Math/sqrt
+     (reduce + (map (fn [a b] (Math/pow (- a b) 2)) v1 v2)))))
 
 (defn cosine-similarity
   "Calculate cosine similarity between two vectors"
@@ -20,9 +32,30 @@
       0)))
 
 (defn cosine-distance
-  "Calculate cosine distance (1 - cosine similarity)"
+  "Calculate cosine distance (1 - cosine similarity) optimized for double arrays"
   [v1 v2]
-  (- 1 (cosine-similarity v1 v2)))
+  (if (and (instance? (Class/forName "[D") v1)
+           (instance? (Class/forName "[D") v2))
+    ;; Optimized path for double arrays
+    (let [^doubles a1 v1
+          ^doubles a2 v2
+          len (alength a1)]
+      (loop [i 0
+             dot 0.0
+             norm1 0.0
+             norm2 0.0]
+        (if (< i len)
+          (let [x (aget a1 i)
+                y (aget a2 i)]
+            (recur (inc i)
+                   (+ dot (* x y))
+                   (+ norm1 (* x x))
+                   (+ norm2 (* y y))))
+          (if (and (> norm1 0.0) (> norm2 0.0))
+            (- 1.0 (/ dot (* (Math/sqrt norm1) (Math/sqrt norm2))))
+            1.0))))
+    ;; Fallback for regular vectors
+    (- 1 (cosine-similarity v1 v2))))
 
 ;; HNSW Parameters
 (defrecord HNSWParams [M ; Number of bi-directional links per node
