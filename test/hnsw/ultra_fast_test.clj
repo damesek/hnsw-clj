@@ -94,6 +94,10 @@
   (is (thrown-with-msg? IllegalArgumentException
                         #"batch-size"
                         (hnsw/build-index [] :batch-size 0
+                                          :show-progress? false)))
+  (is (thrown-with-msg? IllegalArgumentException
+                        #"compact-precision"
+                        (hnsw/build-index [] :compact-precision :float16
                                           :show-progress? false))))
 
 (deftest configurable-ef-search-preserves-safe-default
@@ -142,6 +146,42 @@
                           compact-results mutable-results)))
       (hnsw/optimize-search! index)
       (is (:compact-search? (hnsw/graph-info index))))))
+
+(deftest float32-compact-search-preserves-neighbors
+  (when (try
+          (Class/forName "hnsw.search.CompactSearch")
+          true
+          (catch Throwable _ false))
+    (let [data (random-data 500 48 2718)
+          float64-index (hnsw/build-index data
+                                          :seed 2718
+                                          :compact-precision :float64
+                                          :show-progress? false)
+          float32-index (hnsw/build-index data
+                                          :seed 2718
+                                          :compact-precision :float32
+                                          :show-progress? false)
+          queries (mapv second (take 30 data))
+          float64-results (mapv #(hnsw/search-knn float64-index % 10) queries)
+          float32-results (mapv #(hnsw/search-knn float32-index % 10) queries)
+          overlaps (map (fn [float64 float32]
+                          (/ (count (set/intersection
+                                     (set (map :id float64))
+                                     (set (map :id float32))))
+                             10.0))
+                        float64-results float32-results)
+          distance-deltas
+          (mapcat (fn [float64 float32]
+                    (let [float32-by-id (into {} (map (juxt :id :distance) float32))]
+                      (keep (fn [{:keys [id distance]}]
+                              (when-let [float32-distance (get float32-by-id id)]
+                                (Math/abs (- distance float32-distance))))
+                            float64)))
+                  float64-results float32-results)]
+      (is (= :float64 (:compact-precision (hnsw/graph-info float64-index))))
+      (is (= :float32 (:compact-precision (hnsw/graph-info float32-index))))
+      (is (>= (/ (reduce + overlaps) (count overlaps)) 0.99))
+      (is (every? #(< % 1.0e-5) distance-deltas)))))
 
 (deftest insertion-invalidates-and-lazily-rebuilds-compact-search
   (when (try
@@ -209,7 +249,10 @@
 
 (deftest normalized-index-roundtrip
   (let [data (random-data 100 16 12)
-        index (hnsw/build-index data :seed 12 :show-progress? false)
+        index (hnsw/build-index data
+                                :seed 12
+                                :compact-precision :float32
+                                :show-progress? false)
         [_ query] (first data)
         path (Files/createTempFile "hnsw-clj" ".edn"
                                    (make-array java.nio.file.attribute.FileAttribute 0))]
@@ -219,6 +262,7 @@
                     (str path) hnsw/cosine-distance-ultra)]
         (is (:normalized-cosine? (hnsw/graph-info loaded)))
         (is (= 50 (:ef-search (hnsw/graph-info loaded))))
+        (is (= :float32 (:compact-precision (hnsw/graph-info loaded))))
         (is (= (hnsw/search-knn index query 10)
                (hnsw/search-knn loaded query 10))))
       (finally

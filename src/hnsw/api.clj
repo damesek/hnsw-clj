@@ -13,9 +13,10 @@
    - :seed - deterministic level generation seed (default: 42)
    - :num-threads - parallel construction workers (default: CPU count)
    - :batch-size - dynamically claimed vectors per worker (default: 4)
+   - :compact-precision - :float64 or embedding-optimized :float32 (default: :float64)
    - :show-progress? - print construction progress (default: true)"
   [vectors & {:keys [metric M ef-construction ef-search seed num-threads batch-size
-                     show-progress?]
+                     compact-precision show-progress?]
               :or {metric :euclidean
                    M 16
                    ef-construction 200
@@ -23,6 +24,7 @@
                    seed 42
                    num-threads (.availableProcessors (Runtime/getRuntime))
                    batch-size 4
+                   compact-precision :float64
                    show-progress? true}}]
   (let [distance-fn (case metric
                       :euclidean ultra/euclidean-distance-ultra
@@ -35,6 +37,7 @@
                        :seed seed
                        :num-threads num-threads
                        :batch-size batch-size
+                       :compact-precision compact-precision
                        :show-progress? show-progress?
                        :distance-fn distance-fn)))
 

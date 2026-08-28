@@ -71,20 +71,21 @@ and `k=10` settings:
 
 | Query → index | Runtime | Serial latency | 10-thread QPS | Recall@10 |
 |---------------|---------|----------------|---------------|-----------|
-| Hungarian → Hungarian | Clojure | 0.345 ms | 9,696 | 99.80% |
-| Hungarian → Hungarian | Python `hnswlib` | 0.363 ms | 15,765 | 99.80% |
-| English → Hungarian | Clojure | 0.334 ms | 9,565 | 89.75% |
-| English → Hungarian | Python `hnswlib` | 0.347 ms | 15,722 | 89.55% |
+| Hungarian → Hungarian | Clojure float32 | 0.203 ms | 19,668 | 99.72% |
+| Hungarian → Hungarian | Python `hnswlib` | 0.359 ms | 16,169 | 99.84% |
+| English → Hungarian | Clojure float32 | 0.199 ms | 20,096 | 89.00% |
+| English → Hungarian | Python `hnswlib` | 0.345 ms | 16,023 | 88.82% |
 
-At equal `efSearch=50`, current Clojure serial search is 4–5% faster than Python
-`hnswlib` on this machine. Python's native float32 batch path remains about 1.6×
-faster at 10-thread throughput. The optimized cosine path keeps an immutable,
-primitive-array search snapshot, uses generation-marked visited tables and primitive
-heaps, and evaluates exact double-precision dot products through the Java Vector API.
-The mutable concurrent graph remains the source of truth for construction and updates.
+These rows use 5,000 deterministic queries and five measured runs. At equal
+`efSearch=50`, the float32 Clojure search path is 42–44% faster serially and 22–25%
+faster at 10-thread throughput. The previous float64 snapshot saturated memory
+bandwidth: it occupied twice the vector storage and used two SIMD lanes instead of
+four on this 128-bit Vector API runtime. The compact float32 snapshot fixes both
+limits while keeping the mutable concurrent graph as the double-precision source of
+truth for construction and updates.
 
 Lowering `efSearch` is not a lossless optimization. On the English → Hungarian
-workload, one fixed Clojure graph produced this speed/quality curve:
+workload, one fixed float64 Clojure graph produced this speed/quality curve:
 
 | `efSearch` | Serial latency | Recall@10 |
 |------------|----------------|-----------|
@@ -100,13 +101,13 @@ that explicitly prefer latency or recall. The example includes executable Clojur
 Python, and multilingual embedding preparation shell scripts.
 
 The search algorithm still uses the original HNSW greedy upper-layer descent and
-bounded `efSearch` base-layer expansion. The lossless implementation optimizations
-mirror techniques used by production libraries: contiguous node/vector storage,
-integer neighbor IDs, reusable generation-marked visited tables, and primitive heaps.
-Unlike [LVQ](https://arxiv.org/abs/2304.04759), the default snapshot does not quantize
-vectors, so it introduces no quantization recall loss. More aggressive compressed
-layouts such as LVQ or the [VSAG](https://www.vldb.org/pvldb/vol18/p5017-cheng.pdf)
-pipeline should remain explicit opt-in modes with their own recall benchmarks.
+bounded `efSearch` base-layer expansion. The default `:float64` snapshot is lossless.
+For float32 embedding models, `:compact-precision :float32` halves compact vector
+storage and doubles SIMD lane width; it is explicit because arbitrary double inputs
+can experience small tie-breaking changes. More aggressive compressed layouts such
+as [LVQ](https://arxiv.org/abs/2304.04759) or the
+[VSAG](https://www.vldb.org/pvldb/vol18/p5017-cheng.pdf) pipeline should remain
+separate opt-in modes with their own recall benchmarks.
 
 Compile and enable the optimized Java 21 Vector API path:
 
@@ -118,6 +119,9 @@ clojure -J--add-modules=jdk.incubator.vector -M
 Query-time `efSearch` and ordered parallel batch search are public API options:
 
 ```clojure
+(def index (hnsw.api/index vectors
+                           :metric :cosine
+                           :compact-precision :float32))
 (hnsw.api/search index query 10 80)
 (hnsw.api/search-batch index queries 10 :ef-search 50 :num-threads 10)
 ```

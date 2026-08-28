@@ -6,12 +6,13 @@
 ;; Simplified API wrapper for HNSW
 
 (defn index
-  [{:keys [dimensions m ef-construction ef-search distance seed]
+  [{:keys [dimensions m ef-construction ef-search distance seed compact-precision]
     :or {m 16
          ef-construction 200
          ef-search 50
          distance :cosine
-         seed 42}}]
+         seed 42
+         compact-precision :float64}}]
   (when-not dimensions
     (throw (IllegalArgumentException. "dimensions is required")))
 
@@ -24,6 +25,7 @@
                :ef-construction ef-construction
                :ef-search ef-search
                :seed seed
+               :compact-precision compact-precision
                :distance-fn dist-fn)]
 
     (atom {:graph graph

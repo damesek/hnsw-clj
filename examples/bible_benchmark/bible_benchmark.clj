@@ -37,6 +37,7 @@
    :M (env-long "M" 16)
    :ef-construction (env-long "EF_CONSTRUCTION" 200)
    :ef-search (env-long "EF_SEARCH" 50)
+   :compact-precision (keyword (or (System/getenv "COMPACT_PRECISION") "float32"))
    :seed (env-long "SEED" 42)})
 
 (defn- load-float-vectors
@@ -215,7 +216,8 @@
 
 (defn -main
   [& _]
-  (let [{:keys [runs threads k M ef-construction ef-search seed] :as config}
+  (let [{:keys [runs threads k M ef-construction ef-search compact-precision seed]
+         :as config}
         (environment)]
     (when (some #(not (pos? (long %)))
                 [(:num-vectors config) (:num-queries config) runs threads k])
@@ -227,14 +229,16 @@
                     " / Java " (System/getProperty "java.version")))
       (println (str "Dataset: " source))
       (println (root-format
-                "Vectors=%,d dimensions=%d queries=%,d M=%d efConstruction=%d efSearch=%d k=%d"
-                (count vectors) dimensions (count queries) M ef-construction ef-search k))
+                "Vectors=%,d dimensions=%d queries=%,d M=%d efConstruction=%d efSearch=%d k=%d compactPrecision=%s"
+                (count vectors) dimensions (count queries) M ef-construction ef-search k
+                (name compact-precision)))
       (System/gc)
       (let [started (System/nanoTime)
             index (hnsw/build-index indexed-vectors
                                     :M M
                                     :ef-construction ef-construction
                                     :ef-search ef-search
+                                    :compact-precision compact-precision
                                     :seed seed
                                     :num-threads threads
                                     :batch-size 4

@@ -48,7 +48,10 @@
       [offsets neighbors])))
 
 (defn create-search-engine
-  [^UltraGraph graph]
+  [^UltraGraph graph compact-precision]
+  (when-not (#{:float32 :float64} compact-precision)
+    (throw (IllegalArgumentException.
+            "compact-precision must be :float32 or :float64")))
   (let [nodes (vec (sort-by #(.ordinal ^UltraNode %)
                             (vals (into {} (.nodes graph)))))]
     (when (seq nodes)
@@ -79,4 +82,5 @@
               (throw (IllegalStateException. "HNSW entry point is missing")))
             (CompactEngine.
              (CompactSearch. ids vectors dimension (int entry-index) (int max-level)
-                             offsets-by-level neighbors-by-level))))))))
+                             offsets-by-level neighbors-by-level
+                             (= :float32 compact-precision)))))))))

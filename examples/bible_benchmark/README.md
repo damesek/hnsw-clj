@@ -47,7 +47,9 @@ Both commands default to an English-query to Hungarian-index benchmark. They rep
 The Clojure launcher compiles the optional Java Vector API kernel and immutable
 primitive-array search snapshot before running. It requires a JDK that provides
 `jdk.incubator.vector`; without that module the library automatically uses the
-portable Clojure search path.
+portable Clojure search path. This float32 embedding benchmark defaults to
+`COMPACT_PRECISION=float32`; use `COMPACT_PRECISION=float64` to measure the exact
+double-precision compact path.
 
 The default benchmark uses 1,000 deterministic query verses and five measured runs:
 
@@ -67,20 +69,24 @@ measure bilingual semantic quality.
 
 ## Measured results
 
-Apple Silicon, 10 logical CPUs, 2,000 deterministic queries, five measured runs,
+Apple Silicon, 10 physical CPUs, 5,000 deterministic queries, five measured runs,
 `M=16`, `efConstruction=200`, `efSearch=50`, `k=10`:
 
 | Workload | Runtime | Build | Serial latency | 10-thread QPS | Recall@10 |
 |----------|---------|-------|----------------|---------------|-----------|
-| Hungarian → Hungarian | Clojure | 9.88 s | 0.345 ms | 9,696 | 99.80% |
-| Hungarian → Hungarian | Python `hnswlib` | 5.18 s | 0.363 ms | 15,765 | 99.80% |
-| English → Hungarian | Clojure | 10.48 s | 0.334 ms | 9,565 | 89.75% |
-| English → Hungarian | Python `hnswlib` | 5.16 s | 0.347 ms | 15,722 | 89.55% |
+| Hungarian → Hungarian | Clojure float32 | 9.86 s | 0.203 ms | 19,668 | 99.72% |
+| Hungarian → Hungarian | Python `hnswlib` | 5.15 s | 0.359 ms | 16,169 | 99.84% |
+| English → Hungarian | Clojure float32 | 10.34 s | 0.199 ms | 20,096 | 89.00% |
+| English → Hungarian | Python `hnswlib` | 5.17 s | 0.345 ms | 16,023 | 88.82% |
 
-At equal `efSearch`, Clojure serial search is 4–5% faster in these runs. Python's
-native float32 batch search remains about 1.6× faster with 10 threads. The multilingual
-MPNet vectors for both complete translations took 4 minutes 33 seconds to generate
-on MPS.
+The original Clojure snapshot stored normalized doubles, so ten concurrent searches
+streamed roughly twice as much vector data as `hnswlib` and used only two double SIMD
+lanes on this 128-bit Vector API runtime. Its public wrapper and raw Java kernel both
+measured about 10.6k QPS, ruling out Clojure maps and executor scheduling as the main
+bottleneck. The explicit float32 snapshot halves vector traffic, uses four SIMD lanes,
+and reaches 22–25% higher 10-thread throughput than `hnswlib` at comparable recall.
+The multilingual MPNet vectors for both complete translations took 4 minutes 33
+seconds to generate on MPS.
 
 ## `efSearch`: latency versus accuracy
 
@@ -107,7 +113,7 @@ EF_SEARCH=80 ./examples/bible_benchmark/run_clojure.sh
 EF_SEARCH=80 ./examples/bible_benchmark/run_python.sh
 ```
 
-These optimizations do not quantize the MPNet embeddings: the compact Clojure search
-snapshot stores normalized doubles and computes the same cosine distances as the
-mutable graph. The measured accuracy change in the table comes from `efSearch`, not
-from the primitive layout or SIMD kernel.
+The MPNet files are already float32. The benchmark's float32 compact snapshot therefore
+matches their source precision, while the mutable HNSW graph remains double precision.
+The library default is still `:float64`; float32 is explicit outside this embedding
+benchmark because very close double-valued candidates can change order.

@@ -2,16 +2,20 @@ package hnsw.search;
 
 import java.util.Arrays;
 import jdk.incubator.vector.DoubleVector;
+import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorSpecies;
 
 public final class CompactSearch {
-    private static final VectorSpecies<Double> SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Double> DOUBLE_SPECIES = DoubleVector.SPECIES_PREFERRED;
+    private static final VectorSpecies<Float> FLOAT_SPECIES = FloatVector.SPECIES_PREFERRED;
     private static final SearchResult EMPTY_RESULT =
             new SearchResult(new String[0], new double[0]);
 
     private final String[] ids;
-    private final double[] vectors;
+    private final double[] doubleVectors;
+    private final float[] floatVectors;
+    private final boolean floatStorage;
     private final int dimension;
     private final int entryPoint;
     private final int maxLevel;
@@ -27,6 +31,19 @@ public final class CompactSearch {
             int maxLevel,
             int[][] offsetsByLevel,
             int[][] neighborsByLevel) {
+        this(ids, vectors, dimension, entryPoint, maxLevel,
+                offsetsByLevel, neighborsByLevel, false);
+    }
+
+    public CompactSearch(
+            String[] ids,
+            double[] vectors,
+            int dimension,
+            int entryPoint,
+            int maxLevel,
+            int[][] offsetsByLevel,
+            int[][] neighborsByLevel,
+            boolean floatStorage) {
         if (dimension <= 0) {
             throw new IllegalArgumentException("dimension must be positive");
         }
@@ -41,13 +58,24 @@ public final class CompactSearch {
             throw new IllegalArgumentException("invalid level storage");
         }
         this.ids = ids;
-        this.vectors = vectors;
+        this.floatStorage = floatStorage;
+        if (floatStorage) {
+            this.doubleVectors = null;
+            this.floatVectors = new float[vectors.length];
+            for (int index = 0; index < vectors.length; index++) {
+                this.floatVectors[index] = (float) vectors[index];
+            }
+        } else {
+            this.doubleVectors = vectors;
+            this.floatVectors = null;
+        }
         this.dimension = dimension;
         this.entryPoint = entryPoint;
         this.maxLevel = maxLevel;
         this.offsetsByLevel = offsetsByLevel;
         this.neighborsByLevel = neighborsByLevel;
-        this.workspaces = ThreadLocal.withInitial(() -> new Workspace(ids.length, dimension));
+        this.workspaces = ThreadLocal.withInitial(
+                () -> new Workspace(ids.length, dimension, floatStorage));
     }
 
     public SearchResult search(double[] query, int k, int efSearch) {
@@ -62,9 +90,9 @@ public final class CompactSearch {
         int resultCount = Math.min(k, ids.length);
         int ef = Math.min(ids.length, Math.max(resultCount, efSearch));
         Workspace workspace = workspaces.get();
-        double[] normalizedQuery = workspace.normalize(query);
+        workspace.normalize(query, floatStorage);
         int nearest = entryPoint;
-        double nearestDistance = distance(normalizedQuery, nearest);
+        double nearestDistance = distance(workspace, nearest);
 
         for (int level = maxLevel; level > 0; level--) {
             boolean changed;
@@ -75,7 +103,7 @@ public final class CompactSearch {
                 int end = offsets[nearest + 1];
                 for (int position = offsets[nearest]; position < end; position++) {
                     int candidate = neighbors[position];
-                    double candidateDistance = distance(normalizedQuery, candidate);
+                    double candidateDistance = distance(workspace, candidate);
                     if (candidateDistance < nearestDistance) {
                         nearest = candidate;
                         nearestDistance = candidateDistance;
@@ -107,7 +135,7 @@ public final class CompactSearch {
                 if (!workspace.visit(candidate)) {
                     continue;
                 }
-                double candidateDistance = distance(normalizedQuery, candidate);
+                double candidateDistance = distance(workspace, candidate);
                 worstDistance = workspace.resultDistances[0];
                 if (workspace.resultSize < ef || candidateDistance < worstDistance) {
                     workspace.addCandidate(candidate, candidateDistance);
@@ -132,20 +160,44 @@ public final class CompactSearch {
         return new SearchResult(resultIds, resultDistances);
     }
 
-    private double distance(double[] query, int node) {
+    private double distance(Workspace workspace, int node) {
+        return floatStorage
+                ? floatDistance(workspace.normalizedFloatQuery, node)
+                : doubleDistance(workspace.normalizedDoubleQuery, node);
+    }
+
+    private double doubleDistance(double[] query, int node) {
         int vectorOffset = node * dimension;
-        int upperBound = SPECIES.loopBound(dimension);
-        DoubleVector accumulator = DoubleVector.zero(SPECIES);
+        int upperBound = DOUBLE_SPECIES.loopBound(dimension);
+        DoubleVector accumulator = DoubleVector.zero(DOUBLE_SPECIES);
         int index = 0;
-        for (; index < upperBound; index += SPECIES.length()) {
-            DoubleVector queryVector = DoubleVector.fromArray(SPECIES, query, index);
+        for (; index < upperBound; index += DOUBLE_SPECIES.length()) {
+            DoubleVector queryVector = DoubleVector.fromArray(DOUBLE_SPECIES, query, index);
             DoubleVector storedVector = DoubleVector.fromArray(
-                    SPECIES, vectors, vectorOffset + index);
+                    DOUBLE_SPECIES, doubleVectors, vectorOffset + index);
             accumulator = accumulator.add(queryVector.mul(storedVector));
         }
         double dotProduct = accumulator.reduceLanes(VectorOperators.ADD);
         for (; index < dimension; index++) {
-            dotProduct += query[index] * vectors[vectorOffset + index];
+            dotProduct += query[index] * doubleVectors[vectorOffset + index];
+        }
+        return 1.0 - dotProduct;
+    }
+
+    private double floatDistance(float[] query, int node) {
+        int vectorOffset = node * dimension;
+        int upperBound = FLOAT_SPECIES.loopBound(dimension);
+        FloatVector accumulator = FloatVector.zero(FLOAT_SPECIES);
+        int index = 0;
+        for (; index < upperBound; index += FLOAT_SPECIES.length()) {
+            FloatVector queryVector = FloatVector.fromArray(FLOAT_SPECIES, query, index);
+            FloatVector storedVector = FloatVector.fromArray(
+                    FLOAT_SPECIES, floatVectors, vectorOffset + index);
+            accumulator = accumulator.add(queryVector.mul(storedVector));
+        }
+        float dotProduct = accumulator.reduceLanes(VectorOperators.ADD);
+        for (; index < dimension; index++) {
+            dotProduct += query[index] * floatVectors[vectorOffset + index];
         }
         return 1.0 - dotProduct;
     }
@@ -173,7 +225,8 @@ public final class CompactSearch {
     }
 
     private static final class Workspace {
-        private double[] normalizedQuery;
+        private double[] normalizedDoubleQuery;
+        private float[] normalizedFloatQuery;
         private int[] visited;
         private int generation;
         private int[] candidateNodes;
@@ -183,8 +236,12 @@ public final class CompactSearch {
         private double[] resultDistances;
         private int resultSize;
 
-        private Workspace(int nodeCount, int dimension) {
-            normalizedQuery = new double[dimension];
+        private Workspace(int nodeCount, int dimension, boolean floatStorage) {
+            if (floatStorage) {
+                normalizedFloatQuery = new float[dimension];
+            } else {
+                normalizedDoubleQuery = new double[dimension];
+            }
             visited = new int[Math.max(1, nodeCount)];
             candidateNodes = new int[64];
             candidateDistances = new double[64];
@@ -192,23 +249,31 @@ public final class CompactSearch {
             resultDistances = new double[64];
         }
 
-        private double[] normalize(double[] query) {
-            if (normalizedQuery.length != query.length) {
-                normalizedQuery = new double[query.length];
-            }
+        private void normalize(double[] query, boolean floatStorage) {
             double normSquared = 0.0;
             for (double value : query) {
                 normSquared += value * value;
             }
-            if (normSquared > 0.0) {
-                double scale = 1.0 / Math.sqrt(normSquared);
+            double scale = normSquared > 0.0 ? 1.0 / Math.sqrt(normSquared) : 1.0;
+            if (floatStorage) {
+                if (normalizedFloatQuery.length != query.length) {
+                    normalizedFloatQuery = new float[query.length];
+                }
                 for (int index = 0; index < query.length; index++) {
-                    normalizedQuery[index] = query[index] * scale;
+                    normalizedFloatQuery[index] = (float) (query[index] * scale);
+                }
+                return;
+            }
+            if (normalizedDoubleQuery.length != query.length) {
+                normalizedDoubleQuery = new double[query.length];
+            }
+            if (normSquared > 0.0) {
+                for (int index = 0; index < query.length; index++) {
+                    normalizedDoubleQuery[index] = query[index] * scale;
                 }
             } else {
-                System.arraycopy(query, 0, normalizedQuery, 0, query.length);
+                System.arraycopy(query, 0, normalizedDoubleQuery, 0, query.length);
             }
-            return normalizedQuery;
         }
 
         private void begin(int nodeCount, int ef) {

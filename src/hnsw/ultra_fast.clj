@@ -207,7 +207,8 @@
                      ^AtomicInteger element-count
                      ^AtomicInteger next-ordinal
                      ^Random random-state
-                     ^boolean normalize-vectors])
+                     ^boolean normalize-vectors
+                     compact-precision])
 
 ;; ===== Fast Priority Queue Wrapper =====
 
@@ -219,18 +220,22 @@
 ;; ===== Graph Creation =====
 
 (defn create-ultra-graph
-  [& {:keys [M ef-construction ef-search distance-fn seed]
+  [& {:keys [M ef-construction ef-search distance-fn seed compact-precision]
       :or {M 16
            ef-construction 200
            ef-search 50
            distance-fn euclidean-distance-ultra
-           seed 42}}]
+           seed 42
+           compact-precision :float64}}]
   (when (< M 2)
     (throw (IllegalArgumentException. "M must be at least 2")))
   (when (< ef-construction 1)
     (throw (IllegalArgumentException. "ef-construction must be positive")))
   (when (< ef-search 1)
     (throw (IllegalArgumentException. "ef-search must be positive")))
+  (when-not (#{:float32 :float64} compact-precision)
+    (throw (IllegalArgumentException.
+            "compact-precision must be :float32 or :float64")))
   (let [normalize-vectors (identical? distance-fn cosine-distance-ultra)
         internal-distance-fn (if normalize-vectors
                                cosine-distance-normalized
@@ -250,7 +255,8 @@
                  (AtomicInteger. 0)
                  (AtomicInteger. 0)
                  (Random. (long seed))
-                 normalize-vectors)))
+                 normalize-vectors
+                 compact-precision)))
 
 ;; ===== Level Assignment with Cached Random =====
 
@@ -624,7 +630,8 @@
     (try
       (Class/forName "hnsw.search.CompactSearch")
       (when-let [engine ((requiring-resolve
-                          'hnsw.search.compact/create-search-engine) graph)]
+                          'hnsw.search.compact/create-search-engine)
+                         graph (.compact-precision graph))]
         (.set (.search-index graph) engine))
       graph
       (catch ClassNotFoundException _
@@ -642,7 +649,7 @@
 (defn build-index
   "Build HNSW index from data"
   [data & {:keys [M ef-construction ef-search distance-fn show-progress? seed
-                  num-threads batch-size]
+                  num-threads batch-size compact-precision]
            :or {M 16
                 ef-construction 200
                 ef-search 50
@@ -650,12 +657,14 @@
                 show-progress? true
                 seed 42
                 num-threads (.availableProcessors (Runtime/getRuntime))
-                batch-size 4}}]
+                batch-size 4
+                compact-precision :float64}}]
   (let [graph (create-ultra-graph :M M
                                   :ef-construction ef-construction
                                   :ef-search ef-search
                                   :distance-fn distance-fn
-                                  :seed seed)]
+                                  :seed seed
+                                  :compact-precision compact-precision)]
     (insert-batch graph data
                   :show-progress? show-progress?
                   :num-threads num-threads
@@ -744,6 +753,7 @@
    :M (.M graph)
    :ef-construction (.ef-construction graph)
    :ef-search (.ef-search graph)
+   :compact-precision (.compact-precision graph)
    :vector-api? (and (.normalize-vectors graph)
                      (not (instance? ScalarNormalizedDistance
                                      (.normalized-distance graph))))

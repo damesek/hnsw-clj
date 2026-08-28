@@ -27,6 +27,7 @@
    :ef-search (.ef-search index)
    :ml (.ml index)
    :normalize-vectors (.normalize-vectors index)
+   :compact-precision (.compact-precision index)
    :element-count (.get (.element-count index))})
 
 (defn- lightning-index-data
@@ -119,7 +120,8 @@
                  (AtomicInteger. (:element-count index-data))
                  next-ordinal
                  (Random. 42)
-                 normalize-vectors)]
+                 normalize-vectors
+                 (or (:compact-precision index-data) :float64))]
       (ultra/optimize-search! index))))
 
 (defn load-index
