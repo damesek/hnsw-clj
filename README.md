@@ -19,9 +19,112 @@ Backround: About 3–4 years ago I began exploring how to implement HNSW in Cloj
 
 ## ⚡ Performance Results
 
+### Corrected HNSW construction (August 28, 2026)
+
+The production `hnsw.ultra-fast` builder now follows the insertion flow from the
+[original HNSW paper](https://arxiv.org/abs/1603.09320), cross-checked against
+[hnswlib](https://github.com/nmslib/hnswlib/blob/master/hnswlib/hnswalg.h) and
+[Faiss](https://github.com/facebookresearch/faiss/blob/main/faiss/impl/HNSW.cpp):
+
+- Level multiplier is `1 / log(M)`, instead of the previous `1 / log(2)`.
+- Upper layers use greedy descent before `ef-construction` search on insertion layers.
+- New nodes select at most `M` diverse neighbors; `2M` is only the level-0 reciprocal capacity.
+- Overflow pruning uses the HNSW diversity heuristic and skips provably dominated reciprocal candidates.
+- Cosine indexes normalize stored vectors once and use an equivalent dot-product distance internally.
+- The `:seed` option now makes level generation reproducible.
+- Batch construction uses one shared graph, lock-free concurrent neighbor reads, per-node
+  mutation locks, and atomic entry-point promotion. Level generation remains deterministic;
+  parallel edge insertion order is intentionally schedule-dependent.
+- Workers claim small dynamic batches to balance expensive insertions. The defaults are all
+  available processors and `:batch-size 4`; use `:num-threads 1` for serial construction.
+
+Measured locally with `M=16`, `ef-construction=200`, seed `42`:
+
+| Dataset | Previous builder | Corrected, 1 thread | Corrected, 10 threads | Parallel speedup |
+|---------|------------------|---------------------|----------------------|------------------|
+| 4,000 × 64 | 9.56 s | 1.53 s | — | — |
+| 10,000 × 768 cosine | 69 s documented baseline | 26.84 s | 4.49 s | 5.98× |
+
+On the same 10,000 × 768 benchmark, Python `hnswlib` took 19.65 seconds with one
+thread and 3.35 seconds with 10 threads. The Clojure implementation is therefore
+1.37× slower serially and 1.34× slower in parallel, while retaining JVM-native data
+and a single shared HNSW graph.
+
+```clojure
+(ultra/build-index vectors
+                   :M 16
+                   :ef-construction 200
+                   :num-threads 10
+                   :batch-size 4)
+```
+
+On the deterministic 1,000 × 64 recall check, mean recall@10 is 99.5% and all
+per-layer degree limits are preserved. The remaining build hotspot is the vector
+distance kernel (81% of sampled CPU time for 768-dimensional vectors).
+
+### Current full-Bible search comparison (August 28, 2026)
+
+The reproducible [bilingual Bible benchmark](examples/bible_benchmark/README.md)
+indexes 31,126 non-empty Hungarian verses and queries either Hungarian or English
+MPNet-v2 embeddings with identical `M=16`, `efConstruction=200`, `efSearch=50`,
+and `k=10` settings:
+
+| Query → index | Runtime | Serial latency | 10-thread QPS | Recall@10 |
+|---------------|---------|----------------|---------------|-----------|
+| Hungarian → Hungarian | Clojure | 0.345 ms | 9,696 | 99.80% |
+| Hungarian → Hungarian | Python `hnswlib` | 0.363 ms | 15,765 | 99.80% |
+| English → Hungarian | Clojure | 0.334 ms | 9,565 | 89.75% |
+| English → Hungarian | Python `hnswlib` | 0.347 ms | 15,722 | 89.55% |
+
+At equal `efSearch=50`, current Clojure serial search is 4–5% faster than Python
+`hnswlib` on this machine. Python's native float32 batch path remains about 1.6×
+faster at 10-thread throughput. The optimized cosine path keeps an immutable,
+primitive-array search snapshot, uses generation-marked visited tables and primitive
+heaps, and evaluates exact double-precision dot products through the Java Vector API.
+The mutable concurrent graph remains the source of truth for construction and updates.
+
+Lowering `efSearch` is not a lossless optimization. On the English → Hungarian
+workload, one fixed Clojure graph produced this speed/quality curve:
+
+| `efSearch` | Serial latency | Recall@10 |
+|------------|----------------|-----------|
+| 10 | 0.123 ms | 82.80% |
+| 20 | 0.173 ms | 86.95% |
+| 30 | 0.231 ms | 88.40% |
+| 50 (default) | 0.338 ms | 89.80% |
+| 80 | 0.492 ms | 90.20% |
+| 100 | 0.593 ms | 90.50% |
+
+The default therefore remains 50. Query-time overrides are supported for workloads
+that explicitly prefer latency or recall. The example includes executable Clojure,
+Python, and multilingual embedding preparation shell scripts.
+
+The search algorithm still uses the original HNSW greedy upper-layer descent and
+bounded `efSearch` base-layer expansion. The lossless implementation optimizations
+mirror techniques used by production libraries: contiguous node/vector storage,
+integer neighbor IDs, reusable generation-marked visited tables, and primitive heaps.
+Unlike [LVQ](https://arxiv.org/abs/2304.04759), the default snapshot does not quantize
+vectors, so it introduces no quantization recall loss. More aggressive compressed
+layouts such as LVQ or the [VSAG](https://www.vldb.org/pvldb/vol18/p5017-cheng.pdf)
+pipeline should remain explicit opt-in modes with their own recall benchmarks.
+
+Compile and enable the optimized Java 21 Vector API path:
+
+```bash
+./scripts/compile_vector_kernel.sh
+clojure -J--add-modules=jdk.incubator.vector -M
+```
+
+Query-time `efSearch` and ordered parallel batch search are public API options:
+
+```clojure
+(hnsw.api/search index query 10 80)
+(hnsw.api/search-batch index queries 10 :ef-search 50 :num-threads 10)
+```
+
 *I use the Old Hungarian Károli Bible for semantic similarity research, where pairing Hebrew and Greek meanings is a challenging task (it was). In this environment, it becomes immediately clear if something is not working. I tested on 31,173 verses — the full Károli Bible (mpnet-v2, 768-dim embeddings, 492.9 MB index):*
 
-### 🏆 Latest Benchmark Results (August 15, 2025)
+### 🏆 Historical Benchmark Results (August 15, 2025)
 
 #### Multi-threaded Performance (Production)
 - **Peak Performance:** **0.186 ms/query** (**5,376 QPS**) with 20 threads
@@ -236,7 +339,10 @@ final-test-bench/
 (def results (opt/search index query-vector 10))
 ```
 
-## 📈 Benchmarks
+## 📈 Historical Benchmarks (before construction fix)
+
+The table below is retained for historical search-performance context. Its build
+times predate the corrected HNSW constructor; use the measurements above for current builds.
 
 | Dataset | Vectors | Dims | Build Time | Search (k=10) | QPS | Single Thread |
 |---------|---------|------|------------|---------------|-----|---------------|

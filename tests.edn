@@ -50,6 +50,6 @@
   :capture-output? false
 
  ;; Bindings that apply during testing
-  :bindings {*warn-on-reflection* false
-             *print-length* 100
-             *print-level* 10}}
+  :bindings {clojure.core/*warn-on-reflection* false
+             clojure.core/*print-length* 100
+             clojure.core/*print-level* 10}}

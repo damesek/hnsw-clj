@@ -51,14 +51,15 @@
       (is (not (nil? g)))
 
       ;; Insert some vectors
-      (graph/insert g "v1" [1.0 2.0 3.0])
-      (graph/insert g "v2" [4.0 5.0 6.0])
-      (graph/insert g "v3" [1.1 2.1 3.1])
+      (let [g (-> g
+                  (graph/insert "v1" [1.0 2.0 3.0])
+                  (graph/insert "v2" [4.0 5.0 6.0])
+                  (graph/insert "v3" [1.1 2.1 3.1]))]
 
-      ;; Search
-      (let [results (graph/search-knn g [1.0 2.0 3.0] 2)]
-        (is (= 2 (count results)))
-        (is (every? #(contains? % :id) results))))))
+        ;; Search
+        (let [results (graph/search-knn g [1.0 2.0 3.0] 2)]
+          (is (= 2 (count results)))
+          (is (every? #(contains? % :id) results)))))))
 
 (deftest test-empty-index
   (testing "Empty index operations"

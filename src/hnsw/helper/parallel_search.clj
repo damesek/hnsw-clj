@@ -48,6 +48,11 @@
 
       results)))
 
+(defn parallel-search-async
+  "Backward-compatible alias for the ordered parallel search implementation."
+  [index queries k search-fn num-threads]
+  (parallel-search-futures index queries k search-fn num-threads))
+
 (defn benchmark-parallel-search
   "Benchmark parallel search performance (matching the original benchmark exactly)
    

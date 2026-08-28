@@ -14,6 +14,27 @@
                            distance-fn
                            vector-norms]) ; Pre-computed norms
 
+(defn- indexed-element?
+  [element]
+  (and (sequential? element)
+       (= 2 (count element))
+       (let [vector (second element)]
+         (or (sequential? vector)
+             (instance? (Class/forName "[D") vector)))))
+
+(defn- prepare-elements
+  [elements]
+  (mapv (fn [index element]
+          (let [[id vector] (if (indexed-element? element)
+                              element
+                              [(str index) element])]
+            [(str id)
+             (if (instance? (Class/forName "[D") vector)
+               vector
+               (double-array vector))]))
+        (range)
+        elements))
+
 (defn compute-centroid
   "Compute centroid of vectors"
   ^doubles [vectors]
@@ -51,7 +72,7 @@
 
   (let [start-time (System/currentTimeMillis)
         total-vectors (count data)
-        data-vec (vec data)
+        data-vec (prepare-elements data)
 
         ;; Pre-compute norms for cosine distance
         vector-norms (ConcurrentHashMap. total-vectors)
@@ -186,12 +207,15 @@
           (.collect (java.util.stream.Collectors/toList))
           vec))))
 
-(defn search-lightning [^LightningIndex index ^doubles query-vec k & {:keys [search-percent parallel? mode use-centroids?]
-                                                                      :or {search-percent nil
-                                                                           parallel? false
-                                                                           mode nil
-                                                                           use-centroids? nil}}]
-  (let [;; Get partition count
+(defn search-lightning [^LightningIndex index query k & {:keys [search-percent parallel? mode use-centroids?]
+                                                          :or {search-percent nil
+                                                               parallel? false
+                                                               mode nil
+                                                               use-centroids? nil}}]
+  (let [^doubles query-vec (if (instance? (Class/forName "[D") query)
+                             query
+                             (double-array query))
+        ;; Get partition count
         num-partitions (count (.partitions index))
 
         ;; Dynamic mode configs based on partition count

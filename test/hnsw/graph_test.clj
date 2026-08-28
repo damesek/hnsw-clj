@@ -1,7 +1,6 @@
-(ns hnsw.graph-test)
-  ;; KIKOMMENTELVE A REQUIRE-OK
-  ;; (:require [clojure.test :refer :all]
-  ;;           [hnsw.graph :as hnsw]))
+(ns hnsw.graph-test
+  (:require [clojure.test :refer :all]
+            [hnsw.graph :as hnsw]))
 
 (defn approx=
   "Check if two floating point numbers are approximately equal"
