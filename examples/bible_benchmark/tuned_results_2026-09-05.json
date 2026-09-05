@@ -1,0 +1,222 @@
+{
+  "date": "2026-09-05",
+  "note": "Fixed parameters after tuning; five builds, identical deduplicated held-out queries verified by SHA-256. Runs sequential, not interleaved across runtimes. Clojure includes managed API validation/copying and snapshot; Python includes init_index and add_items. Float64 exact cosine ground truth with lexicographic-ID tie break.",
+  "results": [
+    {
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 1.324772125,
+          "ann_recall_at_10": 0.9901408450704225
+        },
+        {
+          "run": 2,
+          "total_seconds": 0.95205025,
+          "ann_recall_at_10": 0.9891348088531187
+        },
+        {
+          "run": 3,
+          "total_seconds": 0.853220334,
+          "ann_recall_at_10": 0.9915492957746479
+        },
+        {
+          "run": 4,
+          "total_seconds": 0.887327833,
+          "ann_recall_at_10": 0.9899396378269618
+        },
+        {
+          "run": 5,
+          "total_seconds": 0.89807125,
+          "ann_recall_at_10": 0.990543259557344
+        }
+      ],
+      "construction_precision": "float32",
+      "M": 16,
+      "architecture": "aarch64",
+      "query_sha256": "136f7b9706cf8f00fa50eb08e296a774c2025b9639ad3c7a8baa0af94da010db",
+      "vectors": 10000,
+      "query_split": "validation",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "compact_precision": "float32",
+      "dimensions": 768,
+      "seed": 42,
+      "k": 10,
+      "ef_construction": 100,
+      "build_runs": 5,
+      "java": "21.0.8",
+      "threads": 10,
+      "measurement": "managed-api-including-validation-and-snapshot",
+      "runtime": "clojure",
+      "serial_latency_ms": 0.18445640643863176,
+      "ground_truth_tie_break": "lexicographic-id",
+      "ef_search": 80,
+      "median_ann_recall_at_10": 0.9901408450704225,
+      "selected_queries": 1000,
+      "unique_queries": 993,
+      "parallel_qps": 15417.286860894908,
+      "median_total_seconds": 0.89807125,
+      "queries": 497
+    },
+    {
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 4.383043667,
+          "ann_recall_at_10": 0.9881287726358149
+        },
+        {
+          "run": 2,
+          "total_seconds": 3.974872833,
+          "ann_recall_at_10": 0.9871227364185111
+        },
+        {
+          "run": 3,
+          "total_seconds": 3.836254625,
+          "ann_recall_at_10": 0.9843058350100604
+        },
+        {
+          "run": 4,
+          "total_seconds": 3.934863167,
+          "ann_recall_at_10": 0.9873239436619718
+        },
+        {
+          "run": 5,
+          "total_seconds": 3.842216167,
+          "ann_recall_at_10": 0.9861167002012072
+        }
+      ],
+      "construction_precision": "float32",
+      "M": 16,
+      "architecture": "aarch64",
+      "query_sha256": "ecc5d01cf389f2131e36016945965a247c3a9b5377853d14d031d8d5f5d98a9a",
+      "vectors": 31126,
+      "query_split": "validation",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "compact_precision": "float32",
+      "dimensions": 768,
+      "seed": 42,
+      "k": 10,
+      "ef_construction": 100,
+      "build_runs": 5,
+      "java": "21.0.8",
+      "threads": 10,
+      "measurement": "managed-api-including-validation-and-snapshot",
+      "runtime": "clojure",
+      "serial_latency_ms": 0.2995513078470825,
+      "ground_truth_tie_break": "lexicographic-id",
+      "ef_search": 80,
+      "median_ann_recall_at_10": 0.9871227364185111,
+      "selected_queries": 1000,
+      "unique_queries": 994,
+      "parallel_qps": 11640.571020365145,
+      "median_total_seconds": 3.934863167,
+      "queries": 497
+    },
+    {
+      "runtime": "python",
+      "python": "3.13.5",
+      "numpy": "2.5.2",
+      "seed": 42,
+      "query_split": "validation",
+      "selected_queries": 1000,
+      "unique_queries": 993,
+      "query_sha256": "136f7b9706cf8f00fa50eb08e296a774c2025b9639ad3c7a8baa0af94da010db",
+      "ground_truth_tie_break": "lexicographic-id",
+      "hnswlib": "0.8.0",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 10000,
+      "dimensions": 768,
+      "queries": 497,
+      "threads": 10,
+      "M": 16,
+      "ef_construction": 100,
+      "ef_search": 80,
+      "k": 10,
+      "build_runs": 5,
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 0.7007178328931332,
+          "ann_recall_at_10": 0.9933601609657947
+        },
+        {
+          "run": 2,
+          "total_seconds": 0.6999611669452861,
+          "ann_recall_at_10": 0.9917505030181086
+        },
+        {
+          "run": 3,
+          "total_seconds": 0.6627451250096783,
+          "ann_recall_at_10": 0.9929577464788732
+        },
+        {
+          "run": 4,
+          "total_seconds": 0.6603288750629872,
+          "ann_recall_at_10": 0.9919517102615694
+        },
+        {
+          "run": 5,
+          "total_seconds": 0.6631821250775829,
+          "ann_recall_at_10": 0.9921529175050302
+        }
+      ],
+      "median_total_seconds": 0.6631821250775829,
+      "median_ann_recall_at_10": 0.9921529175050302,
+      "serial_latency_ms": 0.31929686515623895,
+      "parallel_qps": 18536.67808267695
+    },
+    {
+      "runtime": "python",
+      "python": "3.13.5",
+      "numpy": "2.5.2",
+      "seed": 42,
+      "query_split": "validation",
+      "selected_queries": 1000,
+      "unique_queries": 994,
+      "query_sha256": "ecc5d01cf389f2131e36016945965a247c3a9b5377853d14d031d8d5f5d98a9a",
+      "ground_truth_tie_break": "lexicographic-id",
+      "hnswlib": "0.8.0",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 31126,
+      "dimensions": 768,
+      "queries": 497,
+      "threads": 10,
+      "M": 16,
+      "ef_construction": 100,
+      "ef_search": 80,
+      "k": 10,
+      "build_runs": 5,
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 2.8242595830233768,
+          "ann_recall_at_10": 0.9877263581488933
+        },
+        {
+          "run": 2,
+          "total_seconds": 2.84496258397121,
+          "ann_recall_at_10": 0.9877263581488933
+        },
+        {
+          "run": 3,
+          "total_seconds": 2.8559826660202816,
+          "ann_recall_at_10": 0.9869215291750503
+        },
+        {
+          "run": 4,
+          "total_seconds": 2.9127158749615774,
+          "ann_recall_at_10": 0.9871227364185111
+        },
+        {
+          "run": 5,
+          "total_seconds": 2.895125958020799,
+          "ann_recall_at_10": 0.986317907444668
+        }
+      ],
+      "median_total_seconds": 2.8559826660202816,
+      "median_ann_recall_at_10": 0.9871227364185111,
+      "serial_latency_ms": 0.44595984291375224,
+      "parallel_qps": 12709.724509485903
+    }
+  ]
+}

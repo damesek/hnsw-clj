@@ -1,0 +1,379 @@
+{
+  "samples": [
+    {
+      "run": 1,
+      "name": "unfiltered-ann",
+      "serial-ms": 0.2609429834,
+      "p50-ms": 0.252583,
+      "p95-ms": 0.357042,
+      "parallel-qps": 15153.650438622411
+    },
+    {
+      "run": 1,
+      "name": "john-3-exact",
+      "serial-ms": 0.0398960166,
+      "p50-ms": 0.039584,
+      "p95-ms": 0.042792,
+      "parallel-qps": 126328.15739922463
+    },
+    {
+      "run": 1,
+      "name": "john-exact",
+      "serial-ms": 0.2296291166,
+      "p50-ms": 0.2285,
+      "p95-ms": 0.24575,
+      "parallel-qps": 26438.234399292276
+    },
+    {
+      "run": 1,
+      "name": "psalms-exact",
+      "serial-ms": 0.6768696584,
+      "p50-ms": 0.651666,
+      "p95-ms": 0.8295,
+      "parallel-qps": 7263.005852960086
+    },
+    {
+      "run": 1,
+      "name": "mixed-chapters-exact",
+      "serial-ms": 0.0497276834,
+      "p50-ms": 0.047292,
+      "p95-ms": 0.06725,
+      "parallel-qps": 115237.13312875823
+    },
+    {
+      "run": 1,
+      "name": "mixed-books-exact",
+      "serial-ms": 0.5313383334,
+      "p50-ms": 0.496,
+      "p95-ms": 1.020542,
+      "parallel-qps": 7193.254450253968
+    },
+    {
+      "run": 2,
+      "name": "unfiltered-ann",
+      "serial-ms": 0.2619543666,
+      "p50-ms": 0.255167,
+      "p95-ms": 0.358,
+      "parallel-qps": 16474.54149728271
+    },
+    {
+      "run": 2,
+      "name": "mixed-books-exact",
+      "serial-ms": 0.5341671582,
+      "p50-ms": 0.500791,
+      "p95-ms": 1.014709,
+      "parallel-qps": 8038.6218351355
+    },
+    {
+      "run": 2,
+      "name": "mixed-chapters-exact",
+      "serial-ms": 0.0527424582,
+      "p50-ms": 0.050209,
+      "p95-ms": 0.072542,
+      "parallel-qps": 104564.41007677182
+    },
+    {
+      "run": 2,
+      "name": "psalms-exact",
+      "serial-ms": 0.6877046334,
+      "p50-ms": 0.668916,
+      "p95-ms": 0.8315,
+      "parallel-qps": 7308.935740385141
+    },
+    {
+      "run": 2,
+      "name": "john-exact",
+      "serial-ms": 0.23482523339999997,
+      "p50-ms": 0.235125,
+      "p95-ms": 0.248583,
+      "parallel-qps": 24612.229282152683
+    },
+    {
+      "run": 2,
+      "name": "john-3-exact",
+      "serial-ms": 0.0447177168,
+      "p50-ms": 0.043125,
+      "p95-ms": 0.049625,
+      "parallel-qps": 86009.79176754181
+    },
+    {
+      "run": 3,
+      "name": "john-exact",
+      "serial-ms": 0.232304825,
+      "p50-ms": 0.231333,
+      "p95-ms": 0.248084,
+      "parallel-qps": 23781.849098222006
+    },
+    {
+      "run": 3,
+      "name": "psalms-exact",
+      "serial-ms": 0.6765890834,
+      "p50-ms": 0.653875,
+      "p95-ms": 0.811958,
+      "parallel-qps": 7077.514415665377
+    },
+    {
+      "run": 3,
+      "name": "mixed-chapters-exact",
+      "serial-ms": 0.052767375000000005,
+      "p50-ms": 0.050291,
+      "p95-ms": 0.071583,
+      "parallel-qps": 103450.23713587507
+    },
+    {
+      "run": 3,
+      "name": "mixed-books-exact",
+      "serial-ms": 0.5329877916,
+      "p50-ms": 0.500125,
+      "p95-ms": 1.024459,
+      "parallel-qps": 7720.991174521038
+    },
+    {
+      "run": 3,
+      "name": "unfiltered-ann",
+      "serial-ms": 0.2612914334,
+      "p50-ms": 0.255667,
+      "p95-ms": 0.350917,
+      "parallel-qps": 16658.263461191214
+    },
+    {
+      "run": 3,
+      "name": "john-3-exact",
+      "serial-ms": 0.0422453582,
+      "p50-ms": 0.041416,
+      "p95-ms": 0.044041,
+      "parallel-qps": 145591.3102254106
+    },
+    {
+      "run": 4,
+      "name": "john-exact",
+      "serial-ms": 0.2344045834,
+      "p50-ms": 0.235084,
+      "p95-ms": 0.245875,
+      "parallel-qps": 26199.717829038982
+    },
+    {
+      "run": 4,
+      "name": "john-3-exact",
+      "serial-ms": 0.0409181666,
+      "p50-ms": 0.041209,
+      "p95-ms": 0.042416,
+      "parallel-qps": 118568.28698609659
+    },
+    {
+      "run": 4,
+      "name": "unfiltered-ann",
+      "serial-ms": 0.265231325,
+      "p50-ms": 0.255916,
+      "p95-ms": 0.369875,
+      "parallel-qps": 14705.700348273338
+    },
+    {
+      "run": 4,
+      "name": "mixed-books-exact",
+      "serial-ms": 0.5368326666,
+      "p50-ms": 0.506083,
+      "p95-ms": 1.042333,
+      "parallel-qps": 8030.159673702492
+    },
+    {
+      "run": 4,
+      "name": "mixed-chapters-exact",
+      "serial-ms": 0.0517972916,
+      "p50-ms": 0.048917,
+      "p95-ms": 0.069792,
+      "parallel-qps": 113346.55709832814
+    },
+    {
+      "run": 4,
+      "name": "psalms-exact",
+      "serial-ms": 0.7531071168000001,
+      "p50-ms": 0.724417,
+      "p95-ms": 0.933,
+      "parallel-qps": 7194.698802028689
+    },
+    {
+      "run": 5,
+      "name": "mixed-chapters-exact",
+      "serial-ms": 0.0528660668,
+      "p50-ms": 0.050084,
+      "p95-ms": 0.070834,
+      "parallel-qps": 118748.27443913705
+    },
+    {
+      "run": 5,
+      "name": "mixed-books-exact",
+      "serial-ms": 0.5404281084,
+      "p50-ms": 0.505,
+      "p95-ms": 1.058834,
+      "parallel-qps": 7792.309505122563
+    },
+    {
+      "run": 5,
+      "name": "unfiltered-ann",
+      "serial-ms": 0.2699552832,
+      "p50-ms": 0.261833,
+      "p95-ms": 0.376417,
+      "parallel-qps": 16391.306378922745
+    },
+    {
+      "run": 5,
+      "name": "john-3-exact",
+      "serial-ms": 0.0485937668,
+      "p50-ms": 0.043209,
+      "p95-ms": 0.082708,
+      "parallel-qps": 115084.50862620537
+    },
+    {
+      "run": 5,
+      "name": "john-exact",
+      "serial-ms": 0.2574622582,
+      "p50-ms": 0.255083,
+      "p95-ms": 0.264541,
+      "parallel-qps": 25586.49033310412
+    },
+    {
+      "run": 5,
+      "name": "psalms-exact",
+      "serial-ms": 0.7523404584,
+      "p50-ms": 0.725833,
+      "p95-ms": 0.902542,
+      "parallel-qps": 7167.667943527458
+    }
+  ],
+  "available-processors": 10,
+  "postings-rebuild-note": "Only the derived cache is dropped between rebuild samples. This measures the next cache-miss query, not total add/update/delete latency.",
+  "architecture": "aarch64",
+  "method": "One full managed index with verse metadata; identical deterministic aligned English queries across workloads. Warmup and validation excluded; five rotated/reversed workload rounds by default. Serial mean, p50 and p95 are medians of per-round values. Parallel QPS uses a prestarted shared executor calling individual managed APIs, including locking, validation and result metadata, not search-batch. Fixed-book workloads reuse the same subset; mixed workloads choose each query's aligned book/chapter. No MPNet inference, loading, graph build or console printing in query timings. Filtered search is exact float64; unfiltered ANN is float32 efSearch as configured, so these are different search scopes/accuracy, not an algorithm speedup comparison.",
+  "vectors": 31126,
+  "postings-rebuild-samples": [
+    {
+      "milliseconds": 18.739959,
+      "returned": 10
+    },
+    {
+      "milliseconds": 16.690458,
+      "returned": 10
+    },
+    {
+      "milliseconds": 14.554417,
+      "returned": 10
+    },
+    {
+      "milliseconds": 15.229,
+      "returned": 10
+    },
+    {
+      "milliseconds": 13.551667,
+      "returned": 10
+    }
+  ],
+  "index-language": "hu",
+  "vector-api?": true,
+  "dimensions": 768,
+  "benchmark": "book-chapter-filtered",
+  "summary": [
+    {
+      "name": "unfiltered-ann",
+      "eligible": {
+        "min": 31126,
+        "max": 31126,
+        "mean": 31126
+      },
+      "serial-ms": 0.2619543666,
+      "p50-ms": 0.255667,
+      "p95-ms": 0.358,
+      "parallel-qps": 16391.306378922745
+    },
+    {
+      "name": "john-3-exact",
+      "eligible": {
+        "min": 36,
+        "max": 36,
+        "mean": 36
+      },
+      "serial-ms": 0.0422453582,
+      "p50-ms": 0.041416,
+      "p95-ms": 0.044041,
+      "parallel-qps": 118568.28698609659
+    },
+    {
+      "name": "john-exact",
+      "eligible": {
+        "min": 878,
+        "max": 878,
+        "mean": 878
+      },
+      "serial-ms": 0.2344045834,
+      "p50-ms": 0.235084,
+      "p95-ms": 0.248084,
+      "parallel-qps": 25586.49033310412
+    },
+    {
+      "name": "psalms-exact",
+      "eligible": {
+        "min": 2527,
+        "max": 2527,
+        "mean": 2527
+      },
+      "serial-ms": 0.6877046334,
+      "p50-ms": 0.668916,
+      "p95-ms": 0.8315,
+      "parallel-qps": 7194.698802028689
+    },
+    {
+      "name": "mixed-chapters-exact",
+      "eligible": {
+        "min": 4,
+        "max": 176,
+        "mean": 33.677
+      },
+      "serial-ms": 0.0527424582,
+      "p50-ms": 0.050084,
+      "p95-ms": 0.070834,
+      "parallel-qps": 113346.55709832814
+    },
+    {
+      "name": "mixed-books-exact",
+      "eligible": {
+        "min": 25,
+        "max": 2527,
+        "mean": 1009.037
+      },
+      "serial-ms": 0.5341671582,
+      "p50-ms": 0.500791,
+      "p95-ms": 1.024459,
+      "parallel-qps": 7792.309505122563
+    }
+  ],
+  "query-language": "en",
+  "java": "21.0.8",
+  "requests-per-trial": 5000,
+  "threads": 10,
+  "warm-jit-postings-rebuild-ms": 15.229,
+  "filter-implementation": "generic-sorted-postings",
+  "top-k": 10,
+  "options": {
+    "ef-search": 80,
+    "M": 16,
+    "compact-precision": "float32",
+    "filter-keys": [
+      "book",
+      "chapter"
+    ],
+    "ef-construction": 100,
+    "seed": 42,
+    "num-threads": 10,
+    "construction-precision": "float32",
+    "metric": "cosine"
+  },
+  "runs": 5,
+  "timestamp": "2026-09-05T20:20:28.551128Z",
+  "queries": 1000,
+  "query-repeats": 5,
+  "cold-first-filtered-call": {
+    "milliseconds": 50.014375,
+    "returned": 10
+  },
+  "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+}

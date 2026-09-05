@@ -1,1 +1,0 @@
-; This file has been deleted - use hnsw.simd-optimized instead

@@ -1,0 +1,35 @@
+{:date "2026-09-05"
+ :base-commit "b7ee89f"
+ :description "Same-process float64/float32 construction comparison; medians of 5 fresh builds; 1000 exact-ground-truth queries"
+ :embedding-sha256 {:hu "0b968c3171888533b741b06f1fcee11068f4141ec287ff3dace5426b6a4fc424"
+                    :en "9be12a38efed8170b69c6f96b4c56c192294fcffa6c370b8a518dc89e5f0256f"}
+ :bible-10000 [
+{:ef-search 50, :M 16, :compact-precision :float32, :architecture "aarch64", :vectors 10000, :source "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2", :ef-construction 200, :dimensions 768, :benchmark :construction, :java "21.0.8", :threads 10, :os "Mac OS X", :runs 5, :queries 1000}
+{:construction-seconds 1.756924375, :snapshot-seconds 0.087335333, :total-seconds 1.844259708, :ann-recall-at-10 0.9839, :run 1, :precision :float64}
+{:construction-seconds 1.127245083, :snapshot-seconds 0.077794208, :total-seconds 1.205039291, :ann-recall-at-10 0.984, :run 1, :precision :float32}
+{:construction-seconds 1.094457959, :snapshot-seconds 0.074442542, :total-seconds 1.168900501, :ann-recall-at-10 0.9851, :run 2, :precision :float32}
+{:construction-seconds 1.63972975, :snapshot-seconds 0.070418708, :total-seconds 1.7101484580000001, :ann-recall-at-10 0.9854, :run 2, :precision :float64}
+{:construction-seconds 1.681447666, :snapshot-seconds 0.07176975, :total-seconds 1.753217416, :ann-recall-at-10 0.9828, :run 3, :precision :float64}
+{:construction-seconds 1.084847834, :snapshot-seconds 0.069784209, :total-seconds 1.154632043, :ann-recall-at-10 0.9845, :run 3, :precision :float32}
+{:construction-seconds 1.027815917, :snapshot-seconds 0.067924709, :total-seconds 1.095740626, :ann-recall-at-10 0.9847, :run 4, :precision :float32}
+{:construction-seconds 1.669662167, :snapshot-seconds 0.066067875, :total-seconds 1.7357300420000001, :ann-recall-at-10 0.9855, :run 4, :precision :float64}
+{:construction-seconds 1.666689458, :snapshot-seconds 0.06685725, :total-seconds 1.733546708, :ann-recall-at-10 0.9852, :run 5, :precision :float64}
+{:construction-seconds 1.801679667, :snapshot-seconds 0.1149275, :total-seconds 1.916607167, :ann-recall-at-10 0.9847, :run 5, :precision :float32}
+{:summary :float64, :construction-seconds 1.669662167, :snapshot-seconds 0.070418708, :total-seconds 1.7357300420000001, :ann-recall-at-10 0.9852, :min-recall 0.9828, :max-recall 0.9855}
+{:summary :float32, :construction-seconds 1.094457959, :snapshot-seconds 0.074442542, :total-seconds 1.168900501, :ann-recall-at-10 0.9847, :min-recall 0.984, :max-recall 0.9851}
+ ]
+ :bible-31126 [
+{:ef-search 50, :M 16, :compact-precision :float32, :architecture "aarch64", :vectors 31126, :source "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2", :ef-construction 200, :dimensions 768, :benchmark :construction, :java "21.0.8", :threads 10, :os "Mac OS X", :runs 5, :queries 1000}
+{:construction-seconds 9.441545625, :snapshot-seconds 0.273521083, :total-seconds 9.715066708, :ann-recall-at-10 0.9795, :run 1, :precision :float64}
+{:construction-seconds 5.860049125, :snapshot-seconds 0.291048959, :total-seconds 6.151098084, :ann-recall-at-10 0.9771, :run 1, :precision :float32}
+{:construction-seconds 6.078821834, :snapshot-seconds 0.259244375, :total-seconds 6.338066209, :ann-recall-at-10 0.9771, :run 2, :precision :float32}
+{:construction-seconds 8.793717875, :snapshot-seconds 0.237219958, :total-seconds 9.030937833000001, :ann-recall-at-10 0.9781, :run 2, :precision :float64}
+{:construction-seconds 8.683980875, :snapshot-seconds 0.23271325, :total-seconds 8.916694125, :ann-recall-at-10 0.9769, :run 3, :precision :float64}
+{:construction-seconds 6.060483292, :snapshot-seconds 0.25242, :total-seconds 6.312903292, :ann-recall-at-10 0.9781, :run 3, :precision :float32}
+{:construction-seconds 6.193081083, :snapshot-seconds 0.266616959, :total-seconds 6.459698042, :ann-recall-at-10 0.977, :run 4, :precision :float32}
+{:construction-seconds 9.052345333, :snapshot-seconds 0.232477542, :total-seconds 9.284822875, :ann-recall-at-10 0.9773, :run 4, :precision :float64}
+{:construction-seconds 9.448898833, :snapshot-seconds 0.276549417, :total-seconds 9.72544825, :ann-recall-at-10 0.9775, :run 5, :precision :float64}
+{:construction-seconds 6.682776417, :snapshot-seconds 0.255459417, :total-seconds 6.938235834, :ann-recall-at-10 0.9775, :run 5, :precision :float32}
+{:summary :float64, :construction-seconds 9.052345333, :snapshot-seconds 0.237219958, :total-seconds 9.284822875, :ann-recall-at-10 0.9775, :min-recall 0.9769, :max-recall 0.9795}
+{:summary :float32, :construction-seconds 6.078821834, :snapshot-seconds 0.259244375, :total-seconds 6.338066209, :ann-recall-at-10 0.9771, :min-recall 0.977, :max-recall 0.9781}
+ ]}

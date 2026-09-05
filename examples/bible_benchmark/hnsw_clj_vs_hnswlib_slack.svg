@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1050" viewBox="0 0 1600 1050">
+<rect x="0" y="0" width="1600" height="1050" rx="0" fill="#08111F"/>
+<text x="50" y="66" fill="#F8FAFC" font-size="42" font-weight="800" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">HNSW-CLJ vs Python hnswlib</text>
+<text x="50" y="108" fill="#A9B8CE" font-size="22" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Full Hungarian Bible · 31,126 verses · MPNet 768D · k=10 · efSearch=50 · Apple Silicon</text>
+<rect x="50" y="150" width="480" height="120" rx="18" fill="#14243C" stroke="#263A58" stroke-width="2"/>
+<text x="74" y="183" fill="#A9B8CE" font-size="17" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">10-THREAD SEARCH THROUGHPUT</text>
+<text x="74" y="225" fill="#70D99B" font-size="34" font-weight="800" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">+23.5% HNSW-CLJ</text>
+<text x="74" y="253" fill="#A9B8CE" font-size="18" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">19.9k vs 16.1k queries/sec</text>
+<rect x="560" y="150" width="480" height="120" rx="18" fill="#14243C" stroke="#263A58" stroke-width="2"/>
+<text x="584" y="183" fill="#A9B8CE" font-size="17" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">SINGLE-QUERY LATENCY</text>
+<text x="584" y="225" fill="#70D99B" font-size="34" font-weight="800" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">−42.9% HNSW-CLJ</text>
+<text x="584" y="253" fill="#A9B8CE" font-size="18" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">0.201 ms vs 0.352 ms</text>
+<rect x="1070" y="150" width="480" height="120" rx="18" fill="#14243C" stroke="#263A58" stroke-width="2"/>
+<text x="1094" y="183" fill="#A9B8CE" font-size="17" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">INDEX BUILD</text>
+<text x="1094" y="225" fill="#FF9F6E" font-size="34" font-weight="800" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Python is 1.96× faster</text>
+<text x="1094" y="253" fill="#A9B8CE" font-size="18" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">5.16 s vs 10.10 s</text>
+<rect x="50" y="300" width="1000" height="460" rx="20" fill="#101D31" stroke="#263A58" stroke-width="2"/>
+<text x="80" y="345" fill="#F8FAFC" font-size="29" font-weight="750" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Search performance</text>
+<text x="80" y="377" fill="#A9B8CE" font-size="19" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">10 threads · QPS · higher is better</text>
+<text x="80" y="430" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Hungarian → Hungarian</text>
+<text x="300" y="478" fill="#A9B8CE" font-size="23" font-weight="600" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">HNSW-CLJ</text>
+<rect x="330" y="450" width="640" height="40" rx="10" fill="#1B2B44"/>
+<rect x="330" y="450" width="572.16" height="40" rx="10" fill="#55D6C2"/>
+<text x="920.16" y="479" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">19,668</text>
+<text x="300" y="536" fill="#A9B8CE" font-size="23" font-weight="600" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">Python hnswlib</text>
+<rect x="330" y="508" width="640" height="40" rx="10" fill="#1B2B44"/>
+<rect x="330" y="508" width="470.3709090909091" height="40" rx="10" fill="#F2C14E"/>
+<text x="818.3709090909091" y="537" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">16,169</text>
+<text x="80" y="610" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">English → Hungarian</text>
+<text x="300" y="658" fill="#A9B8CE" font-size="23" font-weight="600" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">HNSW-CLJ</text>
+<rect x="330" y="630" width="640" height="40" rx="10" fill="#1B2B44"/>
+<rect x="330" y="630" width="584.6109090909091" height="40" rx="10" fill="#55D6C2"/>
+<text x="932.6109090909091" y="659" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">20,096</text>
+<text x="300" y="716" fill="#A9B8CE" font-size="23" font-weight="600" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">Python hnswlib</text>
+<rect x="330" y="688" width="640" height="40" rx="10" fill="#1B2B44"/>
+<rect x="330" y="688" width="466.12363636363636" height="40" rx="10" fill="#F2C14E"/>
+<text x="814.1236363636364" y="717" fill="#F8FAFC" font-size="24" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">16,023</text>
+<rect x="1080" y="300" width="470" height="460" rx="20" fill="#101D31" stroke="#263A58" stroke-width="2"/>
+<text x="1110" y="345" fill="#F8FAFC" font-size="29" font-weight="750" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Index build</text>
+<text x="1110" y="377" fill="#A9B8CE" font-size="19" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Average time · lower is better</text>
+<text x="1130" y="423" fill="#A9B8CE" font-size="22" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">HNSW-CLJ</text>
+<rect x="1130" y="435" width="345" height="38" rx="9" fill="#1B2B44"/>
+<rect x="1130" y="435" width="316.77272727272725" height="38" rx="9" fill="#55D6C2"/>
+<text x="1434.7727272727273" y="463" fill="#08111F" font-size="22" font-weight="800" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">10.10 s</text>
+<text x="1130" y="523" fill="#A9B8CE" font-size="22" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Python hnswlib</text>
+<rect x="1130" y="535" width="345" height="38" rx="9" fill="#1B2B44"/>
+<rect x="1130" y="535" width="161.83636363636364" height="38" rx="9" fill="#F2C14E"/>
+<text x="1279.8363636363636" y="563" fill="#08111F" font-size="22" font-weight="800" text-anchor="end" font-family="Inter, Arial, Helvetica, sans-serif">5.16 s</text>
+<text x="1110" y="635" fill="#F8FAFC" font-size="20" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Exact measurements</text>
+<text x="1110" y="670" fill="#A9B8CE" font-size="19" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">HU→HU: 9.86 s / 5.15 s</text>
+<text x="1110" y="703" fill="#A9B8CE" font-size="19" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">EN→HU: 10.34 s / 5.17 s</text>
+<text x="1110" y="735" fill="#A9B8CE" font-size="16" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Order: HNSW-CLJ / Python</text>
+<rect x="50" y="790" width="1500" height="210" rx="20" fill="#14243C" stroke="#263A58" stroke-width="2"/>
+<text x="80" y="835" fill="#F8FAFC" font-size="28" font-weight="750" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Accuracy: effectively equal</text>
+<text x="80" y="872" fill="#A9B8CE" font-size="18" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Recall@10</text>
+<text x="330" y="872" fill="#55D6C2" font-size="18" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">HNSW-CLJ</text>
+<text x="560" y="872" fill="#F2C14E" font-size="18" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Python hnswlib</text>
+<text x="820" y="872" fill="#A9B8CE" font-size="18" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Difference</text>
+<text x="80" y="915" fill="#F8FAFC" font-size="21" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Hungarian → Hungarian</text>
+<text x="330" y="915" fill="#F8FAFC" font-size="21" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">99.72%</text>
+<text x="560" y="915" fill="#F8FAFC" font-size="21" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">99.84%</text>
+<text x="820" y="915" fill="#A9B8CE" font-size="21" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">−0.12 percentage points</text>
+<text x="80" y="955" fill="#F8FAFC" font-size="21" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">English → Hungarian</text>
+<text x="330" y="955" fill="#F8FAFC" font-size="21" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">89.00%</text>
+<text x="560" y="955" fill="#F8FAFC" font-size="21" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">88.82%</text>
+<text x="820" y="955" fill="#A9B8CE" font-size="21" font-weight="600" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">+0.18 percentage points</text>
+<text x="1120" y="905" fill="#F8FAFC" font-size="19" font-weight="700" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">5,000 queries</text>
+<text x="1120" y="938" fill="#A9B8CE" font-size="18" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Median of 5 measured runs</text>
+<text x="1120" y="970" fill="#A9B8CE" font-size="18" font-weight="500" text-anchor="start" font-family="Inter, Arial, Helvetica, sans-serif">Identical HNSW parameters</text>
+</svg>

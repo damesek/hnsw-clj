@@ -1,7 +1,7 @@
 (ns hnsw.ultra-fast
   "Ultra-fast HNSW implementation with maximum performance optimizations"
-  (:import [java.util PriorityQueue Set ArrayList Arrays Collections Random Iterator]
-           [java.util.concurrent ConcurrentHashMap Executors Callable Future]
+  (:import [java.util PriorityQueue Set ArrayList Arrays BitSet Collections Random Iterator]
+           [java.util.concurrent ConcurrentHashMap ConcurrentSkipListMap ConcurrentLinkedDeque Executors Callable Future]
            [java.util.concurrent.atomic AtomicInteger AtomicReference]))
 
 ;; ===== Performance Configuration =====
@@ -136,6 +136,39 @@
 (definterface NormalizedDistance
   (^double distance [^doubles left ^doubles right]))
 
+(definterface FloatNormalizedDistance
+  (^double distanceFloat [^floats left ^floats right]))
+
+(deftype ScalarFloatNormalizedDistance []
+  FloatNormalizedDistance
+  (distanceFloat [_ left right]
+    (loop [position 0
+           dot-product 0.0]
+      (if (< position (alength left))
+        (recur (inc position)
+               (+ dot-product (* (double (aget left position))
+                                 (double (aget right position)))))
+        (- 1.0 dot-product)))))
+
+(defn create-float-distance-engine
+  "Create a float32 cosine kernel, with a portable scalar fallback."
+  []
+  (try
+    (Class/forName "hnsw.search.VectorDistance")
+    ((requiring-resolve 'hnsw.search.vector/create-float-distance-engine))
+    (catch ClassNotFoundException _ (ScalarFloatNormalizedDistance.))
+    (catch LinkageError _ (ScalarFloatNormalizedDistance.))))
+
+(defn construction-vector
+  "Prepare one cached build vector without altering the normalized double source."
+  [^doubles vector precision]
+  (if (= precision :float32)
+    (let [cached (float-array (alength vector))]
+      (dotimes [position (alength vector)]
+        (aset-float cached position (float (aget vector position))))
+      cached)
+    vector))
+
 (definterface CompactSearchEngine
   (^"[Ljava.lang.Object;" search [^doubles query ^long k ^long ef-search]))
 
@@ -192,7 +225,8 @@
                     ^doubles vector
                     ^long level
                     ^long ordinal
-                    ^objects neighbors])
+                    ^objects neighbors
+                    build-vector])
 
 (deftype UltraGraph [^ConcurrentHashMap nodes
                      ^AtomicReference entry-point
@@ -208,7 +242,10 @@
                      ^AtomicInteger next-ordinal
                      ^Random random-state
                      ^boolean normalize-vectors
-                     compact-precision])
+                     compact-precision
+                     construction-precision
+                     ^FloatNormalizedDistance float-distance
+                     ^AtomicReference maintenance])
 
 ;; ===== Fast Priority Queue Wrapper =====
 
@@ -220,13 +257,15 @@
 ;; ===== Graph Creation =====
 
 (defn create-ultra-graph
-  [& {:keys [M ef-construction ef-search distance-fn seed compact-precision]
+  [& {:keys [M ef-construction ef-search distance-fn seed compact-precision
+             construction-precision]
       :or {M 16
            ef-construction 200
            ef-search 50
            distance-fn euclidean-distance-ultra
            seed 42
-           compact-precision :float64}}]
+           compact-precision :float64
+           construction-precision :float64}}]
   (when (< M 2)
     (throw (IllegalArgumentException. "M must be at least 2")))
   (when (< ef-construction 1)
@@ -236,6 +275,13 @@
   (when-not (#{:float32 :float64} compact-precision)
     (throw (IllegalArgumentException.
             "compact-precision must be :float32 or :float64")))
+  (when-not (#{:float32 :float64} construction-precision)
+    (throw (IllegalArgumentException.
+            "construction-precision must be :float32 or :float64")))
+  (when (and (= construction-precision :float32)
+             (not (identical? distance-fn cosine-distance-ultra)))
+    (throw (IllegalArgumentException.
+            "float32 construction currently requires the built-in cosine distance")))
   (let [normalize-vectors (identical? distance-fn cosine-distance-ultra)
         internal-distance-fn (if normalize-vectors
                                cosine-distance-normalized
@@ -256,7 +302,11 @@
                  (AtomicInteger. 0)
                  (Random. (long seed))
                  normalize-vectors
-                 compact-precision)))
+                 compact-precision
+                 construction-precision
+                 (when (= construction-precision :float32)
+                   (create-float-distance-engine))
+                 (AtomicReference. nil))))
 
 ;; ===== Level Assignment with Cached Random =====
 
@@ -273,14 +323,71 @@
      (long (* ml (- (Math/log uniform)))))))
 
 (defn- graph-distance
-  ^double [^UltraGraph graph ^doubles left ^doubles right]
-  (if (.normalize-vectors graph)
-    (.distance ^NormalizedDistance (.normalized-distance graph) left right)
-    (double ((.distance-fn graph) left right))))
+  ^double [^UltraGraph graph left right]
+  (if-let [^FloatNormalizedDistance engine (.float-distance graph)]
+    (.distanceFloat engine left right)
+    (if (.normalize-vectors graph)
+      (.distance ^NormalizedDistance (.normalized-distance graph) left right)
+      (double ((.distance-fn graph) left right)))))
 
 (defn- new-neighbor-set
   ^Set []
   (ConcurrentHashMap/newKeySet))
+
+(defn- register-maintenance-node!
+  [maintenance ^UltraNode node]
+  (let [incoming (object-array (inc (.level node)))
+        ^ConcurrentSkipListMap levels (:levels maintenance)
+        bucket (new-neighbor-set)]
+    (dotimes [level (alength incoming)]
+      (aset incoming level (new-neighbor-set)))
+    (when-not (.putIfAbsent ^ConcurrentHashMap (:incoming maintenance) (.id node) incoming)
+      (.add ^Set (or (.putIfAbsent levels (.level node) bucket) bucket) (.id node)))))
+
+(defn- ensure-maintenance!
+  [^UltraGraph graph]
+  (or (.get (.maintenance graph))
+      (let [maintenance {:incoming (ConcurrentHashMap.)
+                         :levels (ConcurrentSkipListMap.)
+                         :free-ordinals (ConcurrentLinkedDeque.)}
+            occupied (BitSet. (.get (.next-ordinal graph)))]
+        (doseq [^UltraNode node (vals (.nodes graph))]
+          (.set occupied (int (.ordinal node)))
+          (register-maintenance-node! maintenance node))
+        (loop [ordinal (.nextClearBit occupied 0)]
+          (when (< ordinal (.get (.next-ordinal graph)))
+            (.addFirst ^ConcurrentLinkedDeque (:free-ordinals maintenance) (long ordinal))
+            (recur (.nextClearBit occupied (inc ordinal)))))
+        (doseq [^UltraNode node (vals (.nodes graph))
+                level (range (inc (.level node)))
+                neighbor (aget ^objects (.neighbors node) level)]
+          (.add ^Set (aget ^objects (.get ^ConcurrentHashMap (:incoming maintenance) neighbor) level)
+                (.id node)))
+        (.set (.maintenance graph) maintenance)
+        maintenance)))
+
+(defn- track-connection!
+  [^UltraGraph graph source-id target-id level added?]
+  (when-let [maintenance (.get (.maintenance graph))]
+    (let [^Set incoming (aget ^objects (.get ^ConcurrentHashMap (:incoming maintenance) target-id) level)]
+      (if added? (.add incoming source-id) (.remove incoming source-id)))))
+
+(defn- replace-connections!
+  [^UltraGraph graph ^UltraNode node level identifiers]
+  (let [^Set connections (aget ^objects (.neighbors node) level)
+        retained (set identifiers)]
+    (doseq [neighbor connections :when (not (contains? retained neighbor))]
+      (track-connection! graph (.id node) neighbor level false))
+    (doseq [neighbor retained :when (not (.contains connections neighbor))]
+      (track-connection! graph (.id node) neighbor level true))
+    (.clear connections)
+    (.addAll connections retained)))
+
+(defn- claim-ordinal!
+  [^UltraGraph graph]
+  (or (when-let [maintenance (.get (.maintenance graph))]
+        (.pollFirst ^ConcurrentLinkedDeque (:free-ordinals maintenance)))
+      (.getAndIncrement (.next-ordinal graph))))
 
 ;; ===== Ultra-Fast Search =====
 
@@ -295,7 +402,7 @@
     (vec result)))
 
 (defn- search-layer-candidates
-  [^UltraGraph graph ^doubles query-vec entry-points num-closest level]
+  [^UltraGraph graph query-vec entry-points num-closest level]
   (let [^ConcurrentHashMap nodes (.nodes graph)
         capacity (int (max 1 num-closest))
         ^VisitedState visited (.get tl-visited)
@@ -305,7 +412,7 @@
     (doseq [^String point entry-points]
       (when-let [^UltraNode node (.get nodes point)]
         (when (.visit visited (.ordinal node))
-          (let [dist (graph-distance graph query-vec (.vector node))
+          (let [dist (graph-distance graph query-vec (.build-vector node))
                 candidate (Candidate. point dist)]
             (.add candidates candidate)
             (.add nearest candidate)))))
@@ -326,7 +433,7 @@
                     (let [^String neighbor (.next iterator)]
                       (when-let [^UltraNode neighbor-node (.get nodes neighbor)]
                         (when (.visit visited (.ordinal neighbor-node))
-                          (let [dist (graph-distance graph query-vec (.vector neighbor-node))
+                          (let [dist (graph-distance graph query-vec (.build-vector neighbor-node))
                                 current-worst (if (.isEmpty nearest)
                                                 Double/MAX_VALUE
                                                 (.distance ^Candidate (.peek nearest)))]
@@ -348,16 +455,18 @@
                          (normalize-vector query-vec)
                          query-vec)]
     (mapv (fn [^Candidate candidate] (.id candidate))
-          (search-layer-candidates graph prepared-query entry-points num-closest level))))
+          (search-layer-candidates
+           graph (construction-vector prepared-query (.construction-precision ^UltraGraph graph))
+           entry-points num-closest level))))
 
 (defn- greedy-search-level
-  [^UltraGraph graph ^doubles query-vec ^String entry-id ^long level]
+  [^UltraGraph graph query-vec ^String entry-id ^long level]
   (let [^ConcurrentHashMap nodes (.nodes graph)
         ^UltraNode entry-node (.get nodes entry-id)]
     (if-not entry-node
       entry-id
       (loop [current-id entry-id
-             current-distance (graph-distance graph query-vec (.vector entry-node))]
+             current-distance (graph-distance graph query-vec (.build-vector entry-node))]
         (let [^UltraNode current-node (.get nodes current-id)
               ^Set level-neighbors (aget ^objects (.neighbors current-node) level)
               [best-id best-distance]
@@ -368,7 +477,7 @@
                   (let [^String neighbor (.next iterator)
                         ^UltraNode neighbor-node (.get nodes neighbor)
                         candidate-distance (graph-distance
-                                            graph query-vec (.vector neighbor-node))]
+                                            graph query-vec (.build-vector neighbor-node))]
                     (if (< candidate-distance best-distance)
                       (recur iterator neighbor candidate-distance)
                       (recur iterator best-id best-distance)))
@@ -393,8 +502,8 @@
                                   ^UltraNode accepted-node (.get nodes (.id accepted))
                                   inter-distance (graph-distance
                                                   graph
-                                                  (.vector candidate-node)
-                                                  (.vector accepted-node))]
+                                                  (.build-vector candidate-node)
+                                                  (.build-vector accepted-node))]
                               (if (< inter-distance (.distance candidate))
                                 false
                                 (recur iterator)))
@@ -410,11 +519,13 @@
     (let [^Set connections (aget ^objects (.neighbors target-node) level)]
       (when-not (.contains connections source-id)
         (if (< (.size connections) max-connections)
-          (.add connections source-id)
+          (do
+            (.add connections source-id)
+            (track-connection! graph (.id target-node) source-id level true))
           (let [^ConcurrentHashMap nodes (.nodes graph)
                 ^UltraNode source-node (.get nodes source-id)
-                target-vector (.vector target-node)
-                source-distance (graph-distance graph target-vector (.vector source-node))
+                target-vector (.build-vector target-node)
+                source-distance (graph-distance graph target-vector (.build-vector source-node))
                 furthest-distance
                 (loop [^Iterator iterator (.iterator connections)
                        furthest Double/NEGATIVE_INFINITY]
@@ -425,10 +536,11 @@
                              (max furthest
                                   (graph-distance graph
                                                   target-vector
-                                                  (.vector neighbor-node)))))
+                                                  (.build-vector neighbor-node)))))
                     furthest))]
             (when (< source-distance furthest-distance)
               (.add connections source-id)
+              (track-connection! graph (.id target-node) source-id level true)
               (prune-connections-ultra
                graph (.id target-node) level max-connections))))))))
 
@@ -452,11 +564,14 @@
         stored-vector (if (.normalize-vectors graph)
                         (normalize-vector vector)
                         vector)
-        ordinal (.getAndIncrement (.next-ordinal graph))
+        build-vector (construction-vector stored-vector (.construction-precision graph))
+        ordinal (claim-ordinal! graph)
         neighbors (make-array Object (inc level))]
     (dotimes [layer (inc level)]
       (aset neighbors layer (new-neighbor-set)))
-    (let [new-node (UltraNode. id stored-vector level ordinal neighbors)]
+    (let [new-node (UltraNode. id stored-vector level ordinal neighbors build-vector)]
+      (when-let [maintenance (.get (.maintenance graph))]
+        (register-maintenance-node! maintenance new-node))
       (when (.putIfAbsent nodes id new-node)
         (throw (IllegalArgumentException. (str "Node with id " id " already exists"))))
       (.set (.search-index graph) nil)
@@ -472,13 +587,13 @@
                        nearest entry-point]
                   (if (> layer level)
                     (recur (dec layer)
-                           (greedy-search-level graph stored-vector nearest layer))
+                           (greedy-search-level graph build-vector nearest layer))
                     nearest))]
             (loop [layer (min level entry-level)
                    nearest nearest-entry]
               (when (>= layer 0)
                 (let [candidates (search-layer-candidates
-                                  graph stored-vector [nearest] (.ef-construction graph) layer)
+                                  graph build-vector [nearest] (.ef-construction graph) layer)
                       selected (select-neighbors-heuristic graph candidates (.M graph))
                       max-connections (if (zero? layer) (.max-M graph) (.M graph))
                       next-nearest (if (seq candidates)
@@ -515,7 +630,7 @@
       (locking node
         (let [^Set connections (aget ^objects (.neighbors node) level)]
           (when (> (.size connections) max-conns)
-            (let [node-vector (.vector node)
+            (let [node-vector (.build-vector node)
                   candidates (->> connections
                                   (map (fn [^String neighbor]
                                          (let [^UltraNode neighbor-node (.get nodes neighbor)]
@@ -523,13 +638,85 @@
                                             neighbor
                                             (graph-distance graph
                                                             node-vector
-                                                            (.vector neighbor-node))))))
+                                                            (.build-vector neighbor-node))))))
                                   sort
                                   vec)
                   selected (select-neighbors-heuristic graph candidates max-conns)]
-              (.clear connections)
-              (doseq [^Candidate candidate selected]
-                (.add connections (.id candidate))))))))))
+              (if (.get (.maintenance graph))
+                (replace-connections! graph node level (map #(.id ^Candidate %) selected))
+                (do
+                  (.clear connections)
+                  (doseq [^Candidate candidate selected]
+                    (.add connections (.id candidate))))))))))))
+
+(defn- repair-neighborhood!
+  [^UltraGraph graph ^UltraNode node level boundary]
+  (let [^Set connections (aget ^objects (.neighbors node) level)
+        limit (if (zero? level) (.max-M graph) (.M graph))
+        candidates (->> (into (set connections) boundary)
+                        (remove #(= (.id node) %))
+                        (keep (fn [identifier]
+                                (when-let [^UltraNode candidate (.get (.nodes graph) identifier)]
+                                  (when (<= level (.level candidate))
+                                    (Candidate. identifier
+                                                (graph-distance graph (.build-vector node)
+                                                                (.build-vector candidate)))))))
+                        sort
+                        (take (max limit (.ef-construction graph)))
+                        vec)
+        selected (select-neighbors-heuristic graph candidates limit)]
+    (replace-connections! graph node level (map #(.id ^Candidate %) selected))))
+
+(defn delete-nodes!
+  "Physically remove nodes and repair their incoming/outgoing neighborhoods at every layer.
+   Requires exclusive graph access. Initializes an O(N + E) reverse-edge cache on first use.
+   Does not rebuild the graph or the compact search snapshot."
+  [^UltraGraph graph identifiers]
+  (let [identifiers (filterv #(.containsKey (.nodes graph) %) (distinct identifiers))]
+    (when (seq identifiers)
+      (let [maintenance (ensure-maintenance! graph)
+            ^ConcurrentHashMap incoming (:incoming maintenance)
+            ^ConcurrentSkipListMap levels (:levels maintenance)]
+        (.set (.search-index graph) nil)
+        (doseq [identifier identifiers]
+          (let [^UltraNode node (.get (.nodes graph) identifier)
+                neighborhoods (mapv (fn [level]
+                                      (let [outgoing (set (aget ^objects (.neighbors node) level))
+                                            predecessors (set (aget ^objects (.get incoming identifier) level))]
+                                        {:outgoing outgoing :predecessors predecessors
+                                         :boundary (disj (into outgoing predecessors) identifier)}))
+                                    (range (inc (.level node))))]
+            (doseq [[level {:keys [predecessors]}] (map-indexed vector neighborhoods)]
+              (doseq [source-id predecessors]
+                (let [^UltraNode source (.get (.nodes graph) source-id)]
+                  (.remove ^Set (aget ^objects (.neighbors source) level) identifier)))
+              (replace-connections! graph node level []))
+            (.remove (.nodes graph) identifier)
+            (.remove incoming identifier)
+            (let [^Set bucket (.get levels (.level node))]
+              (.remove bucket identifier)
+              (when (.isEmpty bucket) (.remove levels (.level node))))
+            (.decrementAndGet (.element-count graph))
+            (.addFirst ^ConcurrentLinkedDeque (:free-ordinals maintenance) (.ordinal node))
+            (when (= identifier (.get (.entry-point graph)))
+              (.set (.entry-point graph)
+                    (when-let [highest (.lastEntry levels)]
+                      (first (sort (.getValue highest))))))
+            (doseq [[level {:keys [boundary]}] (map-indexed vector neighborhoods)
+                    source-id (sort boundary)]
+              (repair-neighborhood! graph (.get (.nodes graph) source-id) level boundary)))))))
+  graph)
+
+(defn replace-node!
+  "Repair the old neighborhood, then reinsert the replacement at its original level/slot.
+   Requires exclusive graph access; does not rebuild the search snapshot."
+  [^UltraGraph graph identifier vector]
+  (let [^UltraNode node (.get (.nodes graph) identifier)]
+    (when-not node
+      (throw (IllegalArgumentException. (str "Unknown ID: " identifier))))
+    (let [level (.level node)]
+      (delete-nodes! graph [identifier])
+      (insert-single-at-level graph identifier vector level))))
 
 ;; ===== Batch Insertion =====
 
@@ -649,7 +836,7 @@
 (defn build-index
   "Build HNSW index from data"
   [data & {:keys [M ef-construction ef-search distance-fn show-progress? seed
-                  num-threads batch-size compact-precision]
+                  num-threads batch-size compact-precision construction-precision]
            :or {M 16
                 ef-construction 200
                 ef-search 50
@@ -658,13 +845,15 @@
                 seed 42
                 num-threads (.availableProcessors (Runtime/getRuntime))
                 batch-size 4
-                compact-precision :float64}}]
+                compact-precision :float64
+                construction-precision :float64}}]
   (let [graph (create-ultra-graph :M M
                                   :ef-construction ef-construction
                                   :ef-search ef-search
                                   :distance-fn distance-fn
                                   :seed seed
-                                  :compact-precision compact-precision)]
+                                  :compact-precision compact-precision
+                                  :construction-precision construction-precision)]
     (insert-batch graph data
                   :show-progress? show-progress?
                   :num-threads num-threads
@@ -687,9 +876,11 @@
        []
        (if-let [^CompactSearchEngine engine (compact-search-engine graph)]
          (vec (.search engine query-vec k (max k ef-search)))
-         (let [prepared-query (if (.normalize-vectors graph)
-                                (normalize-vector query-vec)
-                                query-vec)
+         (let [prepared-query (construction-vector
+                               (if (.normalize-vectors graph)
+                                 (normalize-vector query-vec)
+                                 query-vec)
+                               (.construction-precision graph))
                entry-point (.get (.entry-point graph))
                ^UltraNode entry-node (.get (.nodes graph) entry-point)
                entry-level (.level entry-node)
@@ -754,6 +945,12 @@
    :ef-construction (.ef-construction graph)
    :ef-search (.ef-search graph)
    :compact-precision (.compact-precision graph)
+   :construction-precision (.construction-precision graph)
+   :construction-vector-api? (if-let [engine (.float-distance graph)]
+                               (not (instance? ScalarFloatNormalizedDistance engine))
+                               (and (.normalize-vectors graph)
+                                    (not (instance? ScalarNormalizedDistance
+                                                    (.normalized-distance graph)))))
    :vector-api? (and (.normalize-vectors graph)
                      (not (instance? ScalarNormalizedDistance
                                      (.normalized-distance graph))))

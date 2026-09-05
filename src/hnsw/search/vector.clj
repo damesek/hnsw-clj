@@ -1,7 +1,7 @@
 (ns hnsw.search.vector
-  "Java Vector API distance engine for normalized double vectors."
+  "Java Vector API distance engines for normalized vectors."
   (:import [hnsw.search VectorDistance]
-           [hnsw.ultra_fast NormalizedDistance]))
+           [hnsw.ultra_fast NormalizedDistance FloatNormalizedDistance]))
 
 (set! *warn-on-reflection* false)
 (set! *unchecked-math* true)
@@ -14,3 +14,12 @@
 (defn create-distance-engine
   []
   (VectorNormalizedDistance.))
+
+(deftype VectorFloatNormalizedDistance []
+  FloatNormalizedDistance
+  (distanceFloat [_ left right]
+    (VectorDistance/normalizedCosineFloat left right)))
+
+(defn create-float-distance-engine
+  []
+  (VectorFloatNormalizedDistance.))

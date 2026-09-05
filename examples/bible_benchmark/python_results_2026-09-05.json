@@ -1,0 +1,98 @@
+{
+  "date": "2026-09-05",
+  "note": "Same prepared data/configuration as construction_results_2026-09-05.edn; measured after Clojure trials, not interleaved.",
+  "results": [
+    {
+      "runtime": "python",
+      "python": "3.13.5",
+      "hnswlib": "0.8.0",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 10000,
+      "dimensions": 768,
+      "queries": 1000,
+      "threads": 10,
+      "M": 16,
+      "ef_construction": 200,
+      "ef_search": 50,
+      "k": 10,
+      "build_runs": 5,
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 1.1848549159476534,
+          "ann_recall_at_10": 0.9855
+        },
+        {
+          "run": 2,
+          "total_seconds": 1.2210876249009743,
+          "ann_recall_at_10": 0.9863
+        },
+        {
+          "run": 3,
+          "total_seconds": 1.2392450419720262,
+          "ann_recall_at_10": 0.9842
+        },
+        {
+          "run": 4,
+          "total_seconds": 1.247294833068736,
+          "ann_recall_at_10": 0.9859
+        },
+        {
+          "run": 5,
+          "total_seconds": 1.2434784999350086,
+          "ann_recall_at_10": 0.9861
+        }
+      ],
+      "median_total_seconds": 1.2392450419720262,
+      "median_ann_recall_at_10": 0.9859,
+      "serial_latency_ms": 0.27380408300086856,
+      "parallel_qps": 20899.46053775174
+    },
+    {
+      "runtime": "python",
+      "python": "3.13.5",
+      "hnswlib": "0.8.0",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 31126,
+      "dimensions": 768,
+      "queries": 1000,
+      "threads": 10,
+      "M": 16,
+      "ef_construction": 200,
+      "ef_search": 50,
+      "k": 10,
+      "build_runs": 5,
+      "samples": [
+        {
+          "run": 1,
+          "total_seconds": 5.702911832951941,
+          "ann_recall_at_10": 0.9809
+        },
+        {
+          "run": 2,
+          "total_seconds": 5.4930989580461755,
+          "ann_recall_at_10": 0.9802
+        },
+        {
+          "run": 3,
+          "total_seconds": 5.600593458977528,
+          "ann_recall_at_10": 0.98
+        },
+        {
+          "run": 4,
+          "total_seconds": 5.685632332926616,
+          "ann_recall_at_10": 0.9814
+        },
+        {
+          "run": 5,
+          "total_seconds": 5.5263678330229595,
+          "ann_recall_at_10": 0.9815
+        }
+      ],
+      "median_total_seconds": 5.600593458977528,
+      "median_ann_recall_at_10": 0.9809,
+      "serial_latency_ms": 0.36833312502130866,
+      "parallel_qps": 15616.165132979413
+    }
+  ]
+}

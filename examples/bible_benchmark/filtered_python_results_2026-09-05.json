@@ -1,0 +1,109 @@
+{
+  "date": "2026-09-05",
+  "results": [
+    {
+      "benchmark": "python-hnswlib-mixed-chapters",
+      "python": "3.13.5",
+      "hnswlib": "0.8.0",
+      "numpy": "2.5.2",
+      "architecture": "arm64",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 10000,
+      "dimensions": 768,
+      "queries": 1000,
+      "runs": 5,
+      "query_repeats": 1,
+      "requests_per_trial": 1000,
+      "M": 16,
+      "ef_construction": 100,
+      "ef_search": 80,
+      "build_threads": 10,
+      "query_threads": 1,
+      "k": 10,
+      "query_sha256": "df4784c50037522ee881c364328718dd841899fd8b5aa0d7573c448876d990b0",
+      "eligible": {
+        "min": 8,
+        "max": 89,
+        "mean": 34.494
+      },
+      "median_serial_ms": 5.738774124998599,
+      "filtered_recall": 0.9996998799519808,
+      "postings_ms": 1.656958949752152,
+      "samples": [
+        {
+          "run": 1,
+          "serial_ms": 5.605972749995999
+        },
+        {
+          "run": 2,
+          "serial_ms": 5.784595417091623
+        },
+        {
+          "run": 3,
+          "serial_ms": 5.738774124998599
+        },
+        {
+          "run": 4,
+          "serial_ms": 5.718696750001982
+        },
+        {
+          "run": 5,
+          "serial_ms": 5.846138542052358
+        }
+      ],
+      "method": "Same aligned English queries and query-specific book AND chapter as filtered_benchmark.clj. Warm single-thread hnswlib callback ANN, efSearch=80 unless overridden. Timed wrapper includes postings lookup/intersection, callback, native search and result metadata. Loading, embeddings, construction, postings creation and exact subset validation excluded. Five per-round average latency samples; not interleaved with Clojure. Clojure uses exact float64 subset search, not this filtered ANN algorithm."
+    },
+    {
+      "benchmark": "python-hnswlib-mixed-chapters",
+      "python": "3.13.5",
+      "hnswlib": "0.8.0",
+      "numpy": "2.5.2",
+      "architecture": "arm64",
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "vectors": 31126,
+      "dimensions": 768,
+      "queries": 1000,
+      "runs": 5,
+      "query_repeats": 1,
+      "requests_per_trial": 1000,
+      "M": 16,
+      "ef_construction": 100,
+      "ef_search": 80,
+      "build_threads": 10,
+      "query_threads": 1,
+      "k": 10,
+      "query_sha256": "79a3a5d165139e0ca339b7c882e28a68434dde55ab062add73ffe4ad44acc472",
+      "eligible": {
+        "min": 4,
+        "max": 176,
+        "mean": 33.677
+      },
+      "median_serial_ms": 21.34051675000228,
+      "filtered_recall": 0.9994986463451319,
+      "postings_ms": 5.190833006054163,
+      "samples": [
+        {
+          "run": 1,
+          "serial_ms": 21.285696958075278
+        },
+        {
+          "run": 2,
+          "serial_ms": 21.328354709083214
+        },
+        {
+          "run": 3,
+          "serial_ms": 21.59338179102633
+        },
+        {
+          "run": 4,
+          "serial_ms": 21.508774582995102
+        },
+        {
+          "run": 5,
+          "serial_ms": 21.34051675000228
+        }
+      ],
+      "method": "Same aligned English queries and query-specific book AND chapter as filtered_benchmark.clj. Warm single-thread hnswlib callback ANN, efSearch=80 unless overridden. Timed wrapper includes postings lookup/intersection, callback, native search and result metadata. Loading, embeddings, construction, postings creation and exact subset validation excluded. Five per-round average latency samples; not interleaved with Clojure. Clojure uses exact float64 subset search, not this filtered ANN algorithm."
+    }
+  ]
+}

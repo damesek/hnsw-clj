@@ -1,61 +1,9 @@
-{:paths ["target/classes" "src" "dev" "scripts"]
-
- :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/data.json {:mvn/version "2.4.0"}
-        ;; Native BLAS for real SIMD performance
-        org.jblas/jblas {:mvn/version "1.2.5"}
-        org.clojure/core.async {:mvn/version "1.8.741"}
-        ;; math calculations
-        org.apache.commons/commons-math3 {:mvn/version "3.6.1"}
-        net.mikera/core.matrix {:mvn/version "0.63.0"}}
-
- :repl-options {:timeout 600000}
-
+{:paths ["src" "target/classes"]
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}}
  :aliases
-
- {:run {:main-opts ["-m" "hnsw.core"]}
-
-  :test {:extra-paths ["test"]
-         :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}
-                      lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}
-                      lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"}
-                      lambdaisland/kaocha-cljs {:mvn/version "1.5.154"}
-                      ;; For test data generation
-                      org.clojure/test.check {:mvn/version "1.1.1"}
-                      org.clojure/spec.alpha {:mvn/version "0.3.218"}}
-         :main-opts ["-m" "kaocha.runner"]}
-
-  :repl {:extra-deps {cider/cider-nrepl {:mvn/version "0.45.0"}}
-         :main-opts ["-m" "nrepl.cmdline"
-                     "--middleware" "[cider.nrepl/cider-middleware]"
-                     "--interactive"]}
-
-  :nrepl
-  {:extra-deps
-   {nrepl/nrepl {:mvn/version "1.1.0"}
-    cider/cider-nrepl {:mvn/version "0.57.0"}
-    refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}}
-   :main-opts
-   ["-m" "nrepl.cmdline"
-    "--interactive"
-    "--port" "7888"
-    "--middleware" "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor]"]}
-
-  :dev
-  {:extra-paths ["dev"]
-   :extra-deps
-   {nrepl/nrepl {:mvn/version "1.1.0"}
-    cider/cider-nrepl {:mvn/version "0.57.0"}
-    refactor-nrepl/refactor-nrepl {:mvn/version "3.11.0"}}
-   :main-opts
-   ["-m" "nrepl.cmdline"
-    "--interactive"
-    "--port" "7888"
-    "--middleware" "[cider.nrepl/cider-middleware,refactor-nrepl.middleware/wrap-refactor]"]}
-
-  ;; Complete Bible tests and search
-  :test-complete {:main-opts ["-m" "clojure.main" "scripts/test_complete_bible.clj"]}
-
-  ;; Build tools for creating JARs
-  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}}
-          :ns-default build}}}
+ {:test {:extra-paths ["test"]
+         :main-opts ["-m" "hnsw.test-runner"]}
+  :examples {:extra-paths ["examples/bible_benchmark"]
+             :extra-deps {org.clojure/data.json {:mvn/version "2.4.0"}}}
+  :build {:extra-paths ["."]
+          :main-opts ["-m" "build"]}}}

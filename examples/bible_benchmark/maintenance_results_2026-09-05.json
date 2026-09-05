@@ -1,0 +1,1071 @@
+{
+  "date": "2026-09-05",
+  "results": [
+    {
+      "summaries": [
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 1,
+          "median-total-seconds": 0.255862375,
+          "median-mutation-seconds": 0.17983820799999997,
+          "median-snapshot-seconds": 0.076024167,
+          "median-recall-at-10": 0.9868686868686869
+        },
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 2,
+          "median-total-seconds": 0.180592667,
+          "median-mutation-seconds": 0.105972333,
+          "median-snapshot-seconds": 0.075290542,
+          "median-recall-at-10": 0.9843434343434343
+        },
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 3,
+          "median-total-seconds": 0.188492667,
+          "median-mutation-seconds": 0.112377708,
+          "median-snapshot-seconds": 0.076159417,
+          "median-recall-at-10": 0.9843434343434343
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 1,
+          "median-total-seconds": 0.075243041,
+          "median-mutation-seconds": 0.003101417000000009,
+          "median-snapshot-seconds": 0.072150917,
+          "median-recall-at-10": 0.9868686868686869
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 2,
+          "median-total-seconds": 0.072594083,
+          "median-mutation-seconds": 0.001294500000000004,
+          "median-snapshot-seconds": 0.070834292,
+          "median-recall-at-10": 0.9843434343434343
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 3,
+          "median-total-seconds": 0.072489833,
+          "median-mutation-seconds": 0.0012482080000000007,
+          "median-snapshot-seconds": 0.071238417,
+          "median-recall-at-10": 0.9848484848484849
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 1,
+          "median-total-seconds": 0.743023375,
+          "median-mutation-seconds": 0.666825875,
+          "median-snapshot-seconds": 0.078878125,
+          "median-recall-at-10": 0.9868686868686869
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 2,
+          "median-total-seconds": 0.799983125,
+          "median-mutation-seconds": 0.672515666,
+          "median-snapshot-seconds": 0.069379375,
+          "median-recall-at-10": 0.9883838383838384
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 3,
+          "median-total-seconds": 0.758339667,
+          "median-mutation-seconds": 0.6896395,
+          "median-snapshot-seconds": 0.066049458,
+          "median-recall-at-10": 0.9858585858585859
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 1,
+          "median-total-seconds": 0.764205042,
+          "median-mutation-seconds": 0.6969760009999999,
+          "median-snapshot-seconds": 0.067229041,
+          "median-recall-at-10": 0.9858585858585859
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 2,
+          "median-total-seconds": 0.750729584,
+          "median-mutation-seconds": 0.686592584,
+          "median-snapshot-seconds": 0.065482375,
+          "median-recall-at-10": 0.9868686868686869
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 3,
+          "median-total-seconds": 0.71727125,
+          "median-mutation-seconds": 0.655775958,
+          "median-snapshot-seconds": 0.062999959,
+          "median-recall-at-10": 0.9863636363636363
+        }
+      ],
+      "samples": [
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 0.255862375,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.17983820799999997,
+          "snapshot-seconds": 0.076024167
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 0.743023375,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9848484848484849,
+          "mutation-seconds": 0.666825875,
+          "snapshot-seconds": 0.0761975
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 0.065229625,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.003299042000000002,
+          "snapshot-seconds": 0.061930583
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 0.764205042,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9858585858585859,
+          "mutation-seconds": 0.6969760009999999,
+          "snapshot-seconds": 0.067229041
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 0.180592667,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.10608079200000001,
+          "snapshot-seconds": 0.074511875
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 0.733055125,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9883838383838384,
+          "mutation-seconds": 0.666307416,
+          "snapshot-seconds": 0.066747709
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 0.072594083,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.0017597910000000105,
+          "snapshot-seconds": 0.070834292
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 0.716161625,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9863636363636363,
+          "mutation-seconds": 0.65067925,
+          "snapshot-seconds": 0.065482375
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 0.182845959,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.113307167,
+          "snapshot-seconds": 0.069538792
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 0.69652125,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9858585858585859,
+          "mutation-seconds": 0.63391875,
+          "snapshot-seconds": 0.0626025
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 0.0713585,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9848484848484849,
+          "mutation-seconds": 0.0012219590000000086,
+          "snapshot-seconds": 0.070136541
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 0.71727125,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9883838383838384,
+          "mutation-seconds": 0.655775958,
+          "snapshot-seconds": 0.061495292
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 0.224848625,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.161989584,
+          "snapshot-seconds": 0.062859041
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 0.72183175,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.642953625,
+          "snapshot-seconds": 0.078878125
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 0.075243041,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.0030921240000000016,
+          "snapshot-seconds": 0.072150917
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 0.794591875,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.734700167,
+          "snapshot-seconds": 0.059891708
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 0.181670583,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.105972333,
+          "snapshot-seconds": 0.07569825
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 0.84807375,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9883838383838384,
+          "mutation-seconds": 0.7786943749999999,
+          "snapshot-seconds": 0.069379375
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 0.071693459,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.0009862919999999997,
+          "snapshot-seconds": 0.070707167
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 0.750729584,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.686592584,
+          "snapshot-seconds": 0.064137
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 0.192089333,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.112377708,
+          "snapshot-seconds": 0.079711625
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 0.758339667,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9863636363636363,
+          "mutation-seconds": 0.6896395,
+          "snapshot-seconds": 0.068700167
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 0.088675375,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9848484848484849,
+          "mutation-seconds": 0.0012482080000000007,
+          "snapshot-seconds": 0.087427167
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 0.731180541,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9863636363636363,
+          "mutation-seconds": 0.668180582,
+          "snapshot-seconds": 0.062999959
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 0.349942792,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.258960376,
+          "snapshot-seconds": 0.090982416
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 0.763217417,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9873737373737373,
+          "mutation-seconds": 0.683952792,
+          "snapshot-seconds": 0.079264625
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 0.083939834,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9900,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.003101417000000009,
+          "snapshot-seconds": 0.080838417
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 0.749604625,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9900,
+          "ann-recall-at-10": 0.9838383838383838,
+          "mutation-seconds": 0.67436175,
+          "snapshot-seconds": 0.075242875
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 0.178259166,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.102968624,
+          "snapshot-seconds": 0.075290542
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 0.799983125,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.672515666,
+          "snapshot-seconds": 0.127467459
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 0.115927458,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9800,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.001294500000000004,
+          "snapshot-seconds": 0.114632958
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 0.819772459,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9800,
+          "ann-recall-at-10": 0.9868686868686869,
+          "mutation-seconds": 0.734577792,
+          "snapshot-seconds": 0.085194667
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 0.188492667,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9843434343434343,
+          "mutation-seconds": 0.11233325000000001,
+          "snapshot-seconds": 0.076159417
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 0.78178775,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9858585858585859,
+          "mutation-seconds": 0.7157382919999999,
+          "snapshot-seconds": 0.066049458
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 0.072489833,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 9700,
+          "ann-recall-at-10": 0.9848484848484849,
+          "mutation-seconds": 0.0012514160000000052,
+          "snapshot-seconds": 0.071238417
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 0.710702166,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 9700,
+          "ann-recall-at-10": 0.9853535353535353,
+          "mutation-seconds": 0.638421416,
+          "snapshot-seconds": 0.07228075
+        }
+      ],
+      "delete-count-per-cycle": 100,
+      "cycles": 3,
+      "architecture": "aarch64",
+      "method": "Identical starting topology; alternating local/legacy full rebuild; public snapshot included; ground truth recomputed after every mutation outside timing. First local delete includes reverse-edge cache initialization.",
+      "vectors": 10000,
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "dimensions": 768,
+      "benchmark": "local-maintenance",
+      "java": "21.0.8",
+      "options": {
+        "show-progress?": false,
+        "ef-search": 80,
+        "M": 16,
+        "compact-precision": "float32",
+        "ef-construction": 100,
+        "seed": 42,
+        "num-threads": 10,
+        "construction-precision": "float32",
+        "metric": "cosine"
+      },
+      "runs": 3,
+      "queries": 198,
+      "initial-recall-at-10": 0.9858585858585859
+    },
+    {
+      "summaries": [
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 1,
+          "median-total-seconds": 1.68240675,
+          "median-mutation-seconds": 1.135924333,
+          "median-snapshot-seconds": 0.591267167,
+          "median-recall-at-10": 0.983
+        },
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 2,
+          "median-total-seconds": 1.210042792,
+          "median-mutation-seconds": 0.8431915840000002,
+          "median-snapshot-seconds": 0.472933584,
+          "median-recall-at-10": 0.982
+        },
+        {
+          "mode": "local",
+          "operation": "delete-batch",
+          "cycle": 3,
+          "median-total-seconds": 1.6126065,
+          "median-mutation-seconds": 1.161808667,
+          "median-snapshot-seconds": 0.450797833,
+          "median-recall-at-10": 0.981
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 1,
+          "median-total-seconds": 0.448629209,
+          "median-mutation-seconds": 0.0037113329999999833,
+          "median-snapshot-seconds": 0.445063291,
+          "median-recall-at-10": 0.983
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 2,
+          "median-total-seconds": 0.492548958,
+          "median-mutation-seconds": 0.0026306249999999975,
+          "median-snapshot-seconds": 0.489918333,
+          "median-recall-at-10": 0.982
+        },
+        {
+          "mode": "local",
+          "operation": "update-one",
+          "cycle": 3,
+          "median-total-seconds": 0.32322325,
+          "median-mutation-seconds": 0.00204408300000003,
+          "median-snapshot-seconds": 0.321179167,
+          "median-recall-at-10": 0.981
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 1,
+          "median-total-seconds": 5.669822459,
+          "median-mutation-seconds": 5.0197418339999995,
+          "median-snapshot-seconds": 0.61695275,
+          "median-recall-at-10": 0.9825
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 2,
+          "median-total-seconds": 6.207020083,
+          "median-mutation-seconds": 5.876213958,
+          "median-snapshot-seconds": 0.790452875,
+          "median-recall-at-10": 0.982
+        },
+        {
+          "mode": "rebuild",
+          "operation": "delete-batch",
+          "cycle": 3,
+          "median-total-seconds": 5.941354,
+          "median-mutation-seconds": 5.239840791,
+          "median-snapshot-seconds": 0.701513209,
+          "median-recall-at-10": 0.9825
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 1,
+          "median-total-seconds": 6.448393875,
+          "median-mutation-seconds": 5.9184435,
+          "median-snapshot-seconds": 0.746286333,
+          "median-recall-at-10": 0.983
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 2,
+          "median-total-seconds": 6.317885709,
+          "median-mutation-seconds": 5.4439474169999995,
+          "median-snapshot-seconds": 0.795382333,
+          "median-recall-at-10": 0.9825
+        },
+        {
+          "mode": "rebuild",
+          "operation": "update-one",
+          "cycle": 3,
+          "median-total-seconds": 6.04622425,
+          "median-mutation-seconds": 5.318404167,
+          "median-snapshot-seconds": 0.715447584,
+          "median-recall-at-10": 0.9845
+        }
+      ],
+      "samples": [
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 1.824490166,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 1.2332229989999999,
+          "snapshot-seconds": 0.591267167
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 5.471776417,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 4.978794626,
+          "snapshot-seconds": 0.492981791
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 0.448629209,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 0.0035659179999999457,
+          "snapshot-seconds": 0.445063291
+        },
+        {
+          "run": 1,
+          "cycle": 1,
+          "total-seconds": 6.399878333,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.984,
+          "mutation-seconds": 5.9184435,
+          "snapshot-seconds": 0.481434833
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 1.598160917,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.883093834,
+          "snapshot-seconds": 0.715067083
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 6.207020083,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 5.876213958,
+          "snapshot-seconds": 0.330806125
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 0.528333709,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.00211483400000001,
+          "snapshot-seconds": 0.526218875
+        },
+        {
+          "run": 1,
+          "cycle": 2,
+          "total-seconds": 5.786310834,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.985,
+          "mutation-seconds": 5.428240793,
+          "snapshot-seconds": 0.358070041
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 1.798439292,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 1.2549684170000002,
+          "snapshot-seconds": 0.543470875
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 5.689978,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.9825,
+          "mutation-seconds": 5.230945959,
+          "snapshot-seconds": 0.459032041
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 0.32322325,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 0.00204408300000003,
+          "snapshot-seconds": 0.321179167
+        },
+        {
+          "run": 1,
+          "cycle": 3,
+          "total-seconds": 5.362039208,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 4.923039623999999,
+          "snapshot-seconds": 0.438999584
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 1.68240675,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 1.135924333,
+          "snapshot-seconds": 0.546482417
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 5.669822459,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.9825,
+          "mutation-seconds": 5.0197418339999995,
+          "snapshot-seconds": 0.650080625
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 0.531123292,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 0.010711250999999922,
+          "snapshot-seconds": 0.520412041
+        },
+        {
+          "run": 2,
+          "cycle": 1,
+          "total-seconds": 7.004754375,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 6.044986125,
+          "snapshot-seconds": 0.95976825
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 1.116433458,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.643499874,
+          "snapshot-seconds": 0.472933584
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 6.807939583,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.9815,
+          "mutation-seconds": 6.017486708,
+          "snapshot-seconds": 0.790452875
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 0.4374275,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.003200124999999998,
+          "snapshot-seconds": 0.434227375
+        },
+        {
+          "run": 2,
+          "cycle": 2,
+          "total-seconds": 7.019747041,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.9825,
+          "mutation-seconds": 6.2243647079999995,
+          "snapshot-seconds": 0.795382333
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 1.150276542,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 0.8049341670000001,
+          "snapshot-seconds": 0.345342375
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 6.91771875,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.9825,
+          "mutation-seconds": 6.090760125,
+          "snapshot-seconds": 0.826958625
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 0.419364833,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 0.0019932079999999686,
+          "snapshot-seconds": 0.417371625
+        },
+        {
+          "run": 2,
+          "cycle": 3,
+          "total-seconds": 6.04622425,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.9845,
+          "mutation-seconds": 5.330776666,
+          "snapshot-seconds": 0.715447584
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 1.611223375,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 0.98300225,
+          "snapshot-seconds": 0.628221125
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 6.326929584,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.9815,
+          "mutation-seconds": 5.709976834,
+          "snapshot-seconds": 0.61695275
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 0.41740275,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 0.0037113329999999833,
+          "snapshot-seconds": 0.413691417
+        },
+        {
+          "run": 3,
+          "cycle": 1,
+          "total-seconds": 6.448393875,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30815,
+          "ann-recall-at-10": 0.983,
+          "mutation-seconds": 5.702107542,
+          "snapshot-seconds": 0.746286333
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 1.210042792,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.8431915840000002,
+          "snapshot-seconds": 0.366851208
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 5.913830083,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.9835,
+          "mutation-seconds": 5.0994860829999995,
+          "snapshot-seconds": 0.814344
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 0.492548958,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30504,
+          "ann-recall-at-10": 0.982,
+          "mutation-seconds": 0.0026306249999999975,
+          "snapshot-seconds": 0.489918333
+        },
+        {
+          "run": 3,
+          "cycle": 2,
+          "total-seconds": 6.317885709,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30504,
+          "ann-recall-at-10": 0.9795,
+          "mutation-seconds": 5.4439474169999995,
+          "snapshot-seconds": 0.873938292
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 1.6126065,
+          "operation": "delete-batch",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 1.161808667,
+          "snapshot-seconds": 0.450797833
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 5.941354,
+          "operation": "delete-batch",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.9835,
+          "mutation-seconds": 5.239840791,
+          "snapshot-seconds": 0.701513209
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 0.304381583,
+          "operation": "update-one",
+          "mode": "local",
+          "size": 30193,
+          "ann-recall-at-10": 0.981,
+          "mutation-seconds": 0.0020508330000000297,
+          "snapshot-seconds": 0.30233075
+        },
+        {
+          "run": 3,
+          "cycle": 3,
+          "total-seconds": 6.212263042,
+          "operation": "update-one",
+          "mode": "rebuild",
+          "size": 30193,
+          "ann-recall-at-10": 0.986,
+          "mutation-seconds": 5.318404167,
+          "snapshot-seconds": 0.893858875
+        }
+      ],
+      "delete-count-per-cycle": 311,
+      "cycles": 3,
+      "architecture": "aarch64",
+      "method": "Identical starting topology; alternating local/legacy full rebuild; public snapshot included; ground truth recomputed after every mutation outside timing. First local delete includes reverse-edge cache initialization.",
+      "vectors": 31126,
+      "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+      "dimensions": 768,
+      "benchmark": "local-maintenance",
+      "java": "21.0.8",
+      "options": {
+        "show-progress?": false,
+        "ef-search": 80,
+        "M": 16,
+        "compact-precision": "float32",
+        "ef-construction": 100,
+        "seed": 42,
+        "num-threads": 10,
+        "construction-precision": "float32",
+        "metric": "cosine"
+      },
+      "runs": 3,
+      "queries": 200,
+      "initial-recall-at-10": 0.984
+    }
+  ]
+}

@@ -9,7 +9,10 @@ if [[ ! -x "$VENV/bin/python" ]]; then
 fi
 
 if ! "$VENV/bin/python" -c 'import hnswlib, numpy' >/dev/null 2>&1; then
-  "$VENV/bin/pip" install -q -r "$EXAMPLE_DIR/requirements.txt"
+  if ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then
+    "$VENV/bin/python" -m ensurepip --upgrade
+  fi
+  "$VENV/bin/python" -m pip install -q -r "$EXAMPLE_DIR/requirements.txt"
 fi
 
-exec "$VENV/bin/python" "$EXAMPLE_DIR/benchmark.py"
+exec "$VENV/bin/python" "${HNSW_BENCHMARK_SCRIPT:-$EXAMPLE_DIR/benchmark.py}"

@@ -1,0 +1,728 @@
+{
+  "date": "2026-09-05",
+  "note": "Clojure baseline/optimized trials alternate within one JVM; Python was run afterward, not interleaved. Both public APIs included; queries match by SHA-256. Only Clojure API preprocessing changed; HNSW parameters and kernels unchanged.",
+  "results": [
+    {
+      "clojure": {
+        "architecture": "aarch64",
+        "method": "Frozen pre-optimization validation/entries/results vs current API in one JVM, alternating order. Fresh parallel builds; identical graph for all query trials. Loading, embeddings, exact ground truth, warmup and explicit GC excluded. Allocation counters cover only caller-thread preprocessing.",
+        "search-results-identical": true,
+        "vectors": 10000,
+        "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "dimensions": 768,
+        "benchmark": "api-overhead",
+        "summary": [
+          {
+            "build-prepare-seconds": 0.197785625,
+            "prepare-allocated-bytes": 1545535720,
+            "build-total-seconds": 0.930166958,
+            "mode": "baseline",
+            "prepare-seconds": 0.171054959,
+            "prepare-one-add-ms": 0.79098334,
+            "parallel-qps": 17905.50031750739,
+            "build-graph-and-snapshot-seconds": 0.728476458,
+            "serial-ms": 0.17398809657947686
+          },
+          {
+            "build-prepare-seconds": 0.007371,
+            "prepare-allocated-bytes": 64770216,
+            "build-total-seconds": 0.683637833,
+            "mode": "optimized",
+            "prepare-seconds": 0.008670833,
+            "prepare-one-add-ms": 0.0045,
+            "parallel-qps": 24352.150718743684,
+            "build-graph-and-snapshot-seconds": 0.674683958,
+            "serial-ms": 0.1508875754527163
+          }
+        ],
+        "ann-recall-at-10": 0.9907444668008049,
+        "java": "21.0.8",
+        "build-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "total-seconds": 1.044718625,
+            "prepare-seconds": 0.1514325,
+            "graph-and-snapshot-seconds": 0.890213208
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "total-seconds": 0.733459,
+            "prepare-seconds": 0.009623666,
+            "graph-and-snapshot-seconds": 0.721859833
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "total-seconds": 0.683219958,
+            "prepare-seconds": 0.0075005,
+            "graph-and-snapshot-seconds": 0.674063833
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "total-seconds": 0.845377875,
+            "prepare-seconds": 0.197785625,
+            "graph-and-snapshot-seconds": 0.645778542
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "total-seconds": 0.933729667,
+            "prepare-seconds": 0.202861291,
+            "graph-and-snapshot-seconds": 0.728476458
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "total-seconds": 0.689747625,
+            "prepare-seconds": 0.007335084,
+            "graph-and-snapshot-seconds": 0.680905292
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "total-seconds": 0.683637833,
+            "prepare-seconds": 0.007216708,
+            "graph-and-snapshot-seconds": 0.674683958
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "total-seconds": 0.866336292,
+            "prepare-seconds": 0.198479125,
+            "graph-and-snapshot-seconds": 0.666306541
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "total-seconds": 0.930166958,
+            "prepare-seconds": 0.197452667,
+            "graph-and-snapshot-seconds": 0.7309875
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "total-seconds": 0.669548666,
+            "prepare-seconds": 0.007371,
+            "graph-and-snapshot-seconds": 0.660673292
+          }
+        ],
+        "query-sha256": "136f7b9706cf8f00fa50eb08e296a774c2025b9639ad3c7a8baa0af94da010db",
+        "search-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "serial-ms": 0.16890928973843058,
+            "parallel-qps": 17905.50031750739
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "serial-ms": 0.15400712676056338,
+            "parallel-qps": 22716.581349220498
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "serial-ms": 0.1495119879275654,
+            "parallel-qps": 24352.150718743684
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "serial-ms": 0.17398809657947686,
+            "parallel-qps": 18077.32877459717
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "serial-ms": 0.17472216498993964,
+            "parallel-qps": 16599.79709503551
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "serial-ms": 0.14920397384305834,
+            "parallel-qps": 21883.507791563505
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "serial-ms": 0.15167379275653925,
+            "parallel-qps": 24588.99762580117
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "serial-ms": 0.17460538229376257,
+            "parallel-qps": 18314.506057955867
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "serial-ms": 0.17350939034205232,
+            "parallel-qps": 17845.38806053055
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "serial-ms": 0.1508875754527163,
+            "parallel-qps": 28479.743281187322
+          }
+        ],
+        "options": {
+          "show-progress?": false,
+          "ef-search": 80,
+          "M": 16,
+          "compact-precision": "float32",
+          "ef-construction": 100,
+          "seed": 42,
+          "num-threads": 10,
+          "construction-precision": "float32",
+          "metric": "cosine"
+        },
+        "query-split": "validation",
+        "runs": 5,
+        "queries": 497,
+        "preparation-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "prepare": {
+              "seconds": 0.195289708,
+              "caller-allocated-bytes": 1545536016
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.112539417,
+              "caller-allocated-bytes": 254371312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "prepare": {
+              "seconds": 0.017176042,
+              "caller-allocated-bytes": 64770216
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000952209,
+              "caller-allocated-bytes": 3144336
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "prepare": {
+              "seconds": 0.008670833,
+              "caller-allocated-bytes": 64770216
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000550167,
+              "caller-allocated-bytes": 3130512
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "prepare": {
+              "seconds": 0.151736625,
+              "caller-allocated-bytes": 1545535720
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.061858125,
+              "caller-allocated-bytes": 254371312
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "prepare": {
+              "seconds": 0.171054959,
+              "caller-allocated-bytes": 1545535720
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.079974791,
+              "caller-allocated-bytes": 254371312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "prepare": {
+              "seconds": 0.008419042,
+              "caller-allocated-bytes": 64770216
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.00045,
+              "caller-allocated-bytes": 3130512
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "prepare": {
+              "seconds": 0.008827958,
+              "caller-allocated-bytes": 64770216
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000400209,
+              "caller-allocated-bytes": 3130512
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "prepare": {
+              "seconds": 0.150787083,
+              "caller-allocated-bytes": 1545535720
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.061160959,
+              "caller-allocated-bytes": 254371312
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "prepare": {
+              "seconds": 0.171700167,
+              "caller-allocated-bytes": 1545535720
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.079098334,
+              "caller-allocated-bytes": 254371312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "prepare": {
+              "seconds": 0.007822375,
+              "caller-allocated-bytes": 64770216
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000395792,
+              "caller-allocated-bytes": 3130512
+            }
+          }
+        ]
+      },
+      "python": {
+        "runtime": "python",
+        "python": "3.13.5",
+        "numpy": "2.5.2",
+        "seed": 42,
+        "query_split": "validation",
+        "selected_queries": 1000,
+        "unique_queries": 993,
+        "query_sha256": "136f7b9706cf8f00fa50eb08e296a774c2025b9639ad3c7a8baa0af94da010db",
+        "ground_truth_tie_break": "lexicographic-id",
+        "hnswlib": "0.8.0",
+        "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "vectors": 10000,
+        "dimensions": 768,
+        "queries": 497,
+        "threads": 10,
+        "M": 16,
+        "ef_construction": 100,
+        "ef_search": 80,
+        "k": 10,
+        "build_runs": 5,
+        "samples": [
+          {
+            "run": 1,
+            "total_seconds": 0.6606257919920608,
+            "ann_recall_at_10": 0.9907444668008049
+          },
+          {
+            "run": 2,
+            "total_seconds": 0.6828270840924233,
+            "ann_recall_at_10": 0.9909456740442656
+          },
+          {
+            "run": 3,
+            "total_seconds": 0.678041834034957,
+            "ann_recall_at_10": 0.9921529175050302
+          },
+          {
+            "run": 4,
+            "total_seconds": 0.6721970420330763,
+            "ann_recall_at_10": 0.9909456740442656
+          },
+          {
+            "run": 5,
+            "total_seconds": 0.7144552500685677,
+            "ann_recall_at_10": 0.9907444668008049
+          }
+        ],
+        "median_total_seconds": 0.678041834034957,
+        "median_ann_recall_at_10": 0.9909456740442656,
+        "serial_latency_ms": 0.33552758348824635,
+        "parallel_qps": 18660.03806971697
+      }
+    },
+    {
+      "clojure": {
+        "architecture": "aarch64",
+        "method": "Frozen pre-optimization validation/entries/results vs current API in one JVM, alternating order. Fresh parallel builds; identical graph for all query trials. Loading, embeddings, exact ground truth, warmup and explicit GC excluded. Allocation counters cover only caller-thread preprocessing.",
+        "search-results-identical": true,
+        "vectors": 31126,
+        "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "dimensions": 768,
+        "benchmark": "api-overhead",
+        "summary": [
+          {
+            "build-prepare-seconds": 0.582063042,
+            "prepare-allocated-bytes": 4811554880,
+            "build-total-seconds": 4.139538125,
+            "mode": "baseline",
+            "prepare-seconds": 0.51968975,
+            "prepare-one-add-ms": 2.95616584,
+            "parallel-qps": 11221.769094060259,
+            "build-graph-and-snapshot-seconds": 3.551530583,
+            "serial-ms": 0.30103068410462774
+          },
+          {
+            "build-prepare-seconds": 0.024160125,
+            "prepare-allocated-bytes": 199924296,
+            "build-total-seconds": 3.567215083,
+            "mode": "optimized",
+            "prepare-seconds": 0.023296292,
+            "prepare-one-add-ms": 0.00449792,
+            "parallel-qps": 14163.545865650987,
+            "build-graph-and-snapshot-seconds": 3.536522875,
+            "serial-ms": 0.26794944668008047
+          }
+        ],
+        "ann-recall-at-10": 0.9867203219315895,
+        "java": "21.0.8",
+        "build-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "total-seconds": 4.187410917,
+            "prepare-seconds": 0.555110125,
+            "graph-and-snapshot-seconds": 3.622998667
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "total-seconds": 3.567215083,
+            "prepare-seconds": 0.024160125,
+            "graph-and-snapshot-seconds": 3.536522875
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "total-seconds": 3.562738,
+            "prepare-seconds": 0.023040083,
+            "graph-and-snapshot-seconds": 3.534018541
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "total-seconds": 4.162121417,
+            "prepare-seconds": 0.617863166,
+            "graph-and-snapshot-seconds": 3.53764575
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "total-seconds": 4.113171792,
+            "prepare-seconds": 0.599455666,
+            "graph-and-snapshot-seconds": 3.5081565
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "total-seconds": 3.734239875,
+            "prepare-seconds": 0.024176375,
+            "graph-and-snapshot-seconds": 3.703425625
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "total-seconds": 3.600414042,
+            "prepare-seconds": 0.02454975,
+            "graph-and-snapshot-seconds": 3.569620083
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "total-seconds": 4.139538125,
+            "prepare-seconds": 0.582063042,
+            "graph-and-snapshot-seconds": 3.551530583
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "total-seconds": 4.124379959,
+            "prepare-seconds": 0.565591834,
+            "graph-and-snapshot-seconds": 3.552940125
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "total-seconds": 3.545702917,
+            "prepare-seconds": 0.02405775,
+            "graph-and-snapshot-seconds": 3.515400375
+          }
+        ],
+        "query-sha256": "ecc5d01cf389f2131e36016945965a247c3a9b5377853d14d031d8d5f5d98a9a",
+        "search-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "serial-ms": 0.2891827625754527,
+            "parallel-qps": 11221.769094060259
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "serial-ms": 0.26794944668008047,
+            "parallel-qps": 14290.472573564017
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "serial-ms": 0.2678876579476861,
+            "parallel-qps": 14163.545865650987
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "serial-ms": 0.3026277665995976,
+            "parallel-qps": 11902.979936174163
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "serial-ms": 0.2870297625754527,
+            "parallel-qps": 10790.263951349934
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "serial-ms": 0.26701584507042253,
+            "parallel-qps": 13494.464296511991
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "serial-ms": 0.26889168410462777,
+            "parallel-qps": 11964.419501531951
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "serial-ms": 0.3164196841046278,
+            "parallel-qps": 10857.642564615371
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "serial-ms": 0.30103068410462774,
+            "parallel-qps": 11705.536191044901
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "serial-ms": 0.2703351770623742,
+            "parallel-qps": 14343.520445952461
+          }
+        ],
+        "options": {
+          "show-progress?": false,
+          "ef-search": 80,
+          "M": 16,
+          "compact-precision": "float32",
+          "ef-construction": 100,
+          "seed": 42,
+          "num-threads": 10,
+          "construction-precision": "float32",
+          "metric": "cosine"
+        },
+        "query-split": "validation",
+        "runs": 5,
+        "queries": 497,
+        "preparation-samples": [
+          {
+            "mode": "baseline",
+            "run": 1,
+            "prepare": {
+              "seconds": 0.549944875,
+              "caller-allocated-bytes": 4811555208
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.295616584,
+              "caller-allocated-bytes": 972623312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 1,
+            "prepare": {
+              "seconds": 0.023335291,
+              "caller-allocated-bytes": 199924296
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000711875,
+              "caller-allocated-bytes": 3138736
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 2,
+            "prepare": {
+              "seconds": 0.023902917,
+              "caller-allocated-bytes": 199924296
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000481834,
+              "caller-allocated-bytes": 3124912
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 2,
+            "prepare": {
+              "seconds": 0.51968975,
+              "caller-allocated-bytes": 4811554880
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.305221375,
+              "caller-allocated-bytes": 972623312
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 3,
+            "prepare": {
+              "seconds": 0.473286541,
+              "caller-allocated-bytes": 4811554880
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.280479166,
+              "caller-allocated-bytes": 972623312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 3,
+            "prepare": {
+              "seconds": 0.022446958,
+              "caller-allocated-bytes": 199924296
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000449792,
+              "caller-allocated-bytes": 3124912
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 4,
+            "prepare": {
+              "seconds": 0.023296292,
+              "caller-allocated-bytes": 199924296
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.00043625,
+              "caller-allocated-bytes": 3124912
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 4,
+            "prepare": {
+              "seconds": 0.567992166,
+              "caller-allocated-bytes": 4811554880
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.287545417,
+              "caller-allocated-bytes": 972623312
+            }
+          },
+          {
+            "mode": "baseline",
+            "run": 5,
+            "prepare": {
+              "seconds": 0.486186208,
+              "caller-allocated-bytes": 4811554880
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.315573375,
+              "caller-allocated-bytes": 972623312
+            }
+          },
+          {
+            "mode": "optimized",
+            "run": 5,
+            "prepare": {
+              "seconds": 0.023186917,
+              "caller-allocated-bytes": 199924296
+            },
+            "prepare-one-add-100-calls": {
+              "seconds": 0.000407875,
+              "caller-allocated-bytes": 3124912
+            }
+          }
+        ]
+      },
+      "python": {
+        "runtime": "python",
+        "python": "3.13.5",
+        "numpy": "2.5.2",
+        "seed": 42,
+        "query_split": "validation",
+        "selected_queries": 1000,
+        "unique_queries": 994,
+        "query_sha256": "ecc5d01cf389f2131e36016945965a247c3a9b5377853d14d031d8d5f5d98a9a",
+        "ground_truth_tie_break": "lexicographic-id",
+        "hnswlib": "0.8.0",
+        "source": "en->hu:sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+        "vectors": 31126,
+        "dimensions": 768,
+        "queries": 497,
+        "threads": 10,
+        "M": 16,
+        "ef_construction": 100,
+        "ef_search": 80,
+        "k": 10,
+        "build_runs": 5,
+        "samples": [
+          {
+            "run": 1,
+            "total_seconds": 2.830966665991582,
+            "ann_recall_at_10": 0.9869215291750503
+          },
+          {
+            "run": 2,
+            "total_seconds": 2.8904542500386015,
+            "ann_recall_at_10": 0.9867203219315895
+          },
+          {
+            "run": 3,
+            "total_seconds": 2.8756255420157686,
+            "ann_recall_at_10": 0.9877263581488933
+          },
+          {
+            "run": 4,
+            "total_seconds": 2.932123209000565,
+            "ann_recall_at_10": 0.9871227364185111
+          },
+          {
+            "run": 5,
+            "total_seconds": 2.8802152080461383,
+            "ann_recall_at_10": 0.9873239436619718
+          }
+        ],
+        "median_total_seconds": 2.8802152080461383,
+        "median_ann_recall_at_10": 0.9871227364185111,
+        "serial_latency_ms": 0.47916784096449255,
+        "parallel_qps": 12307.565221424824
+      }
+    }
+  ]
+}

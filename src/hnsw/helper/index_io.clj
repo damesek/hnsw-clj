@@ -2,14 +2,12 @@
   "HNSW Index Serialization/Deserialization utilities using EDN format"
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [hnsw.ann.partition.lightning :as lightning]
             [hnsw.ultra-fast :as ultra])
-  (:import [hnsw.ann.partition.lightning LightningIndex]
-           [java.util Random]
+  (:import [java.util Random]
            [java.util.concurrent ConcurrentHashMap]
            [java.util.concurrent.atomic AtomicInteger AtomicReference]))
 
-(defn- ultra-index-data
+(defn index-data
   [index]
   {:index-type :ultra
    :nodes (into {}
@@ -28,59 +26,33 @@
    :ml (.ml index)
    :normalize-vectors (.normalize-vectors index)
    :compact-precision (.compact-precision index)
+   :construction-precision (.construction-precision index)
+   :metric (cond
+             (or (.normalize-vectors index)
+                 (identical? (.distance-fn index) ultra/cosine-distance-ultra)) :cosine
+             (identical? (.distance-fn index) ultra/euclidean-distance-ultra) :euclidean
+             :else :custom)
    :element-count (.get (.element-count index))})
 
-(defn- lightning-index-data
-  [^LightningIndex index]
-  {:index-type :lightning
-   :partitions (mapv (fn [partition]
-                       (mapv (fn [[id vector]] [id (vec vector)]) partition))
-                     (.partitions index))
-   :centroids (mapv vec (.centroids index))
-   :vector-norms (into {} (.vector-norms index))
-   :element-count (.size ^ConcurrentHashMap (.data-map index))})
-
-(defn save-index
-  "Save an UltraGraph or LightningIndex to an EDN file."
-  [index filepath]
-  (println (format "💾 Saving index to %s..." filepath))
-  (let [start (System/currentTimeMillis)
-        index-data (if (instance? LightningIndex index)
-                     (lightning-index-data index)
-                     (ultra-index-data index))]
-    (binding [*print-length* nil
-              *print-level* nil]
-      (spit filepath (pr-str index-data)))
-    (let [elapsed (- (System/currentTimeMillis) start)
-          file-size (double (/ (.length (io/file filepath)) (* 1024 1024)))]
-      (println (format "✅ Index saved in %.2f seconds (%.1f MB)"
-                       (double (/ elapsed 1000.0)) file-size))))
-  index)
-
-(defn- load-lightning-index
-  [index-data]
-  (let [partitions (mapv (fn [partition]
-                           (mapv (fn [[id vector]]
-                                   [id (double-array vector)])
-                                 partition))
-                         (:partitions index-data))
-        centroids (mapv double-array (:centroids index-data))
-        data-map (ConcurrentHashMap.)
-        vector-norms (ConcurrentHashMap.)]
-    (doseq [partition partitions
-            [id vector] partition]
-      (.put data-map id vector))
-    (doseq [[id norm] (:vector-norms index-data)]
-      (.put vector-norms id norm))
-    (lightning/->LightningIndex partitions
-                                centroids
-                                data-map
-                                ultra/cosine-distance-ultra
-                                vector-norms)))
-
-(defn- load-ultra-index
+(defn from-data
   [index-data distance-fn]
-  (let [nodes (ConcurrentHashMap.)
+  (when (or (:construction-codec index-data) (:construction-codebook index-data))
+    (throw (IllegalArgumentException. "This index uses a removed construction codec; rebuild from source vectors")))
+  (let [metric (case (:metric index-data)
+                 :cosine ultra/cosine-distance-ultra
+                 :euclidean ultra/euclidean-distance-ultra
+                 :custom (or distance-fn
+                             (throw (IllegalArgumentException.
+                                     "Loading a custom metric requires its distance function")))
+                 nil (or distance-fn ultra/cosine-distance-ultra)
+                 (throw (IllegalArgumentException. "Unknown saved distance metric")))
+        normalize-vectors (boolean (:normalize-vectors index-data))
+        precision (or (:construction-precision index-data) :float64)
+        _ (when-not (#{:float32 :float64} precision)
+            (throw (IllegalArgumentException. "Invalid saved construction-precision")))
+        _ (when (and (= precision :float32) (not normalize-vectors))
+            (throw (IllegalArgumentException. "float32 construction requires normalized cosine vectors")))
+        nodes (ConcurrentHashMap.)
         next-ordinal (AtomicInteger. 0)]
     (doseq [[key node-data] (:nodes index-data)]
       (let [neighbors (into-array
@@ -91,22 +63,18 @@
                             (:neighbors node-data)))
             ordinal (long (or (:ordinal node-data)
                               (.getAndIncrement next-ordinal)))
+            vector (double-array (:vector node-data))
             node (ultra/->UltraNode
                   (:id node-data)
-                  (double-array (:vector node-data))
+                  vector
                   (:level node-data)
                   ordinal
-                  neighbors)]
+                  neighbors
+                  (ultra/construction-vector vector precision))]
         (when (>= ordinal (.get next-ordinal))
           (.set next-ordinal (int (inc ordinal))))
         (.put nodes key node)))
-    (let [normalize-vectors (boolean (:normalize-vectors index-data))
-          internal-distance-fn (if normalize-vectors
-                                 ultra/cosine-distance-normalized
-                                 distance-fn)
-          normalized-distance (when normalize-vectors
-                                (ultra/create-normalized-distance-engine))
-          index (ultra/->UltraGraph
+    (let [index (ultra/->UltraGraph
                  nodes
                  (AtomicReference. (:entry-point index-data))
                  (:M index-data)
@@ -114,39 +82,47 @@
                  (:ef-construction index-data)
                  (or (:ef-search index-data) 50)
                  (:ml index-data)
-                 internal-distance-fn
-                 normalized-distance
+                 (if normalize-vectors ultra/cosine-distance-normalized metric)
+                 (when normalize-vectors (ultra/create-normalized-distance-engine))
                  (AtomicReference. nil)
-                 (AtomicInteger. (:element-count index-data))
+                 (AtomicInteger. (.size nodes))
                  next-ordinal
                  (Random. 42)
                  normalize-vectors
-                 (or (:compact-precision index-data) :float64))]
+                 (or (:compact-precision index-data) :float64)
+                 precision
+                 (when (= precision :float32) (ultra/create-float-distance-engine))
+                 (AtomicReference. nil))]
       (ultra/optimize-search! index))))
 
-(defn load-index
-  "Load an UltraGraph or LightningIndex from an EDN file."
-  ([filepath]
-   (load-index filepath ultra/cosine-distance-ultra))
-  ([filepath distance-fn]
-   (if (.exists (io/file filepath))
-     (do
-       (println (format "📂 Loading index from %s..." filepath))
-       (let [start (System/currentTimeMillis)
-             index-data (edn/read-string (slurp filepath))
-             index (if (= :lightning (:index-type index-data))
-                     (load-lightning-index index-data)
-                     (load-ultra-index index-data distance-fn))
-             elapsed (- (System/currentTimeMillis) start)]
-         (println (format "✅ Index loaded in %.2f seconds (%d vectors)"
-                          (double (/ elapsed 1000.0))
-                          (:element-count index-data)))
-         index))
-     (do
-       (println (format "❌ Index file not found: %s" filepath))
-       nil))))
+(defn write-data!
+  "Atomically replace a local EDN file."
+  [filepath data]
+  (let [destination (.toAbsolutePath (.toPath (io/file filepath)))
+        temporary (java.nio.file.Files/createTempFile
+                    (.getParent destination) ".hnsw-" ".tmp"
+                    (make-array java.nio.file.attribute.FileAttribute 0))]
+    (try
+      (binding [*print-length* nil *print-level* nil]
+        (spit (.toFile temporary) (pr-str data)))
+      (java.nio.file.Files/move
+        temporary destination
+        (into-array java.nio.file.CopyOption
+                    [java.nio.file.StandardCopyOption/ATOMIC_MOVE
+                     java.nio.file.StandardCopyOption/REPLACE_EXISTING]))
+      (finally (java.nio.file.Files/deleteIfExists temporary)))))
 
-(defn index-exists?
-  "Check if an index file exists"
-  [filepath]
-  (.exists (io/file filepath)))
+(defn save-index
+  "Save a raw HNSW graph. Prefer hnsw.api for application use."
+  [index filepath]
+  (write-data! filepath (index-data index))
+  index)
+
+(defn load-index
+  "Read a raw HNSW graph. Legacy custom metrics require their distance function."
+  ([filepath] (load-index filepath nil))
+  ([filepath distance-fn]
+   (let [data (edn/read-string (slurp filepath))]
+     (when-not (= :ultra (:index-type data))
+       (throw (IllegalArgumentException. "Not an HNSW index")))
+     (from-data data distance-fn))))

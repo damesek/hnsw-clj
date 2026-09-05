@@ -7,5 +7,4 @@ cd "$ROOT_DIR"
 "$ROOT_DIR/scripts/compile_vector_kernel.sh"
 
 exec clj -J-Xms1g -J-Xmx8g -J--add-modules=jdk.incubator.vector \
-  -Sdeps '{:aliases {:bible-benchmark {:extra-paths ["examples/bible_benchmark"]}}}' \
-  -M:bible-benchmark -m bible-benchmark
+  -M:examples -m bible-benchmark
